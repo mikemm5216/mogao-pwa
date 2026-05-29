@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T15:41:12.743Z",
+  "updatedAt": "2026-05-29T15:41:54.359Z",
   "notes": [
     {
       "id": "130",
@@ -37,12 +37,19 @@
           "createdAt": "2026-05-29T15:41:12.062Z",
           "clientUploadId": "130-958a2992beeb680f",
           "pendingUpload": false
+        },
+        {
+          "src": "images/caves/130/130-75b4eba1e4089911.jpg",
+          "caption": "甬道南壁-現狀",
+          "createdAt": "2026-05-29T15:41:53.274Z",
+          "clientUploadId": "130-75b4eba1e4089911",
+          "pendingUpload": false
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T15:41:12.331Z"
+      "updatedAt": "2026-05-29T15:41:53.463Z"
     }
   ],
   "coordinateMap": {
