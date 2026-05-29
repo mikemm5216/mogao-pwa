@@ -1,10 +1,10 @@
-const CACHE_NAME = 'mogao-pwa-final-130-v1';
+const CACHE_NAME = 'mogao-pwa-final-130-no-cover-ch1-131-v1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icons/icon-192.svg',
-  './icons/icon-512.svg'
+  './icon-192.svg',
+  './icon-512.svg'
 ];
 
 self.addEventListener('install', (event) => {
