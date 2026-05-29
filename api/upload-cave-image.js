@@ -11,40 +11,31 @@ module.exports = async function handler(req, res) {
   const branch = process.env.GITHUB_BRANCH || 'main';
   if (!token) return res.status(500).json({ error: 'Missing GITHUB_TOKEN' });
 
-  const { caveId, imageDataUrl, caption } = req.body || {};
+  const { caveId, imageDataUrl, caption, clientUploadId } = req.body || {};
   const id = String(caveId || '').replace(/[^0-9]/g, '');
   if (!id) return res.status(400).json({ error: 'Missing caveId' });
+  if (!imageDataUrl || !String(imageDataUrl).startsWith('data:image/')) return res.status(400).json({ error: 'Missing imageDataUrl' });
 
-  const match = String(imageDataUrl || '').match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+  const match = String(imageDataUrl).match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
   if (!match) return res.status(400).json({ error: 'Invalid imageDataUrl' });
   const mime = match[1];
   const base64 = match[2];
   const ext = mime.includes('png') ? 'png' : mime.includes('webp') ? 'webp' : 'jpg';
-  const stamp = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
-  const imagePath = `images/caves/${id}/${stamp}.${ext}`;
-
+  const safeUploadId = String(clientUploadId || new Date().toISOString()).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
+  const imagePath = `images/caves/${id}/${safeUploadId}.${ext}`;
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${imagePath}`;
-  const result = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      message: `Add Mogao cave ${id} image`,
-      branch,
-      content: base64
-    })
-  });
-  if (!result.ok) return res.status(result.status).json({ error: await result.text() });
 
-  return res.status(200).json({
-    ok: true,
-    image: {
-      src: imagePath,
-      caption: caption || '',
-      createdAt: new Date().toISOString()
-    }
+  const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
+  const existing = await fetch(`${url}?ref=${encodeURIComponent(branch)}`, { headers });
+  if (existing.ok) {
+    return res.status(200).json({ ok: true, deduped: true, image: { src: imagePath, caption: caption || '', createdAt: new Date().toISOString(), clientUploadId: safeUploadId } });
+  }
+
+  const putRes = await fetch(url, {
+    method: 'PUT',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: `Add cave ${id} image`, branch, content: base64 })
   });
+  if (!putRes.ok) return res.status(putRes.status).json({ error: await putRes.text() });
+  return res.status(200).json({ ok: true, image: { src: imagePath, caption: caption || '', createdAt: new Date().toISOString(), clientUploadId: safeUploadId } });
 };
