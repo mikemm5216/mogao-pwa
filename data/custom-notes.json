@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T15:26:00.899Z",
+  "updatedAt": "2026-05-29T15:26:28.891Z",
   "notes": [
     {
       "id": "130",
@@ -37,12 +37,19 @@
           "createdAt": "2026-05-29T14:52:59.591Z",
           "clientUploadId": "130-36684-png-729328-1780065290069",
           "pendingUpload": false
+        },
+        {
+          "src": "images/caves/130/130-b965710ed24bc0b6.jpg",
+          "caption": "南大像佛頭",
+          "createdAt": "2026-05-29T15:26:28.073Z",
+          "clientUploadId": "130-b965710ed24bc0b6",
+          "pendingUpload": false
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T14:52:59.745Z"
+      "updatedAt": "2026-05-29T15:26:28.287Z"
     }
   ],
   "coordinateMap": {
