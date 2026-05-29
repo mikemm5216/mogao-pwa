@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T16:29:35.218Z",
+  "updatedAt": "2026-05-29T16:41:23.476Z",
   "notes": [
     {
       "id": "130",
@@ -39,12 +39,18 @@
           "caption": "甬道南壁-現狀",
           "createdAt": "2026-05-29T15:41:53.274Z",
           "clientUploadId": "130-75b4eba1e4089911"
+        },
+        {
+          "src": "images/caves/130/130-95c7c5cabb76add4.png",
+          "caption": "南大佛彌勒佛像",
+          "createdAt": "2026-05-29T16:41:22.059Z",
+          "clientUploadId": "130-95c7c5cabb76add4"
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T15:41:53.463Z"
+      "updatedAt": "2026-05-29T16:41:22.259Z"
     }
   ],
   "coordinateMap": {
