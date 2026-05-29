@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-personal-notes-v2-vercel-fixed';
+const CACHE_NAME = 'mogao-pwa-v5-multi-photo-multi-caption-lock';
 const ASSETS = [
   './',
   './index.html',
