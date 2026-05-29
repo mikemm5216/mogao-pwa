@@ -1,10 +1,12 @@
-const CACHE_NAME = 'mogao-pwa-final-130-no-cover-ch1-131-v1';
+const CACHE_NAME = 'mogao-pwa-personal-notes-v2-vercel-fixed';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.svg',
-  './icon-512.svg'
+  './icon-512.svg',
+  './data/custom-notes.json',
+  './data/cave-coordinates.json'
 ];
 
 self.addEventListener('install', (event) => {

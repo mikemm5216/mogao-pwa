@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
@@ -1272,10 +1272,289 @@
             }
         };
 
+
+        // ==========================================
+        // 個人新增筆記 / OCR / GitHub 同步工具
+        // ==========================================
+        const CUSTOM_NOTES_KEY = 'mogao.customNotes.v1';
+        const SYNC_CONFIG_KEY = 'mogao.githubSyncConfig.v1';
+        const OPENAI_CONFIG_KEY = 'mogao.openaiOcrConfig.v1';
+        let customNotes = [];
+        let caveCoordinateMap = {};
+
+        function safeJsonParse(raw, fallback) {
+            try { return raw ? JSON.parse(raw) : fallback; } catch (_) { return fallback; }
+        }
+
+        function loadCustomNotes() {
+            customNotes = safeJsonParse(localStorage.getItem(CUSTOM_NOTES_KEY), []);
+            customNotes.forEach((note) => {
+                if (!orangeNotesData.find((item) => item.id === note.id)) orangeNotesData.push(note);
+            });
+        }
+
+        function saveCustomNotes() {
+            localStorage.setItem(CUSTOM_NOTES_KEY, JSON.stringify(customNotes));
+        }
+
+        function buildCoordinateMapFromExistingLabels() {
+            document.querySelectorAll('button.orange-pulse-btn[onclick*="handleHotspotClick"]').forEach((btn) => {
+                const onclick = btn.getAttribute('onclick') || '';
+                const idMatch = onclick.match(/['\"]([^'\"]+)['\"]\)/);
+                const id = idMatch ? idMatch[1] : (btn.textContent || '').trim();
+                const container = btn.closest('[id^="container-"]');
+                const segmentId = container ? Number(container.id.replace('container-', '')) : null;
+                const leftMatch = (btn.getAttribute('style') || '').match(/left:\s*([\d.]+)%/);
+                const topMatch = (btn.getAttribute('style') || '').match(/top:\s*([\d.]+)%/);
+                if (id && segmentId && leftMatch && topMatch) {
+                    caveCoordinateMap[id] = { segmentId, x: Number(leftMatch[1]), y: Number(topMatch[1]) };
+                }
+            });
+            customNotes.forEach((note) => {
+                if (note.segmentId && typeof note.x === 'number' && typeof note.y === 'number') {
+                    caveCoordinateMap[note.id] = { segmentId: note.segmentId, x: note.x, y: note.y };
+                }
+            });
+        }
+
+        function getCaveCoordinate(caveId) {
+            return caveCoordinateMap[String(caveId).trim()] || null;
+        }
+
+        function createOrangeMarker(note) {
+            if (!note || !note.id || document.querySelector(`button[data-custom-cave="${CSS.escape(note.id)}"]`)) return;
+            const coordinate = getCaveCoordinate(note.id) || (note.segmentId ? { segmentId: note.segmentId, x: note.x, y: note.y } : null);
+            if (!coordinate) return;
+            const container = document.getElementById(`container-${coordinate.segmentId}`);
+            if (!container) return;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.customCave = note.id;
+            btn.textContent = note.id;
+            btn.className = 'orange-pulse-btn absolute bg-orange-500 hover:bg-orange-400 text-stone-950 text-[9px] font-bold px-2 py-1 rounded-full border border-white shadow-lg cursor-pointer z-10';
+            btn.style.left = `${coordinate.x}%`;
+            btn.style.top = `${coordinate.y}%`;
+            btn.onclick = (event) => handleHotspotClick(event, note.id);
+            container.appendChild(btn);
+        }
+
+        function renderCustomMarkers() {
+            customNotes.forEach(createOrangeMarker);
+        }
+
+        function renderNotebookWithCustomNotes() {
+            initNotebook();
+            renderCustomMarkers();
+        }
+
+        function setToolStatus(message, tone = 'stone') {
+            const el = document.getElementById('mogao-tool-status');
+            if (!el) return;
+            const color = tone === 'ok' ? 'text-emerald-300' : tone === 'warn' ? 'text-amber-300' : tone === 'bad' ? 'text-red-300' : 'text-stone-300';
+            el.className = `text-[11px] font-sans mt-2 ${color}`;
+            el.textContent = message;
+        }
+
+        function getSyncConfig() {
+            return safeJsonParse(localStorage.getItem(SYNC_CONFIG_KEY), {
+                owner: 'mikemm5216', repo: 'mogao-pwa', branch: 'main', path: 'data/custom-notes.json', token: ''
+            });
+        }
+
+        function getOpenAiConfig() {
+            return safeJsonParse(localStorage.getItem(OPENAI_CONFIG_KEY), { apiKey: '', model: 'gpt-4.1-mini' });
+        }
+
+        function normalizeNoteDraft(raw) {
+            const cave = String(raw.id || raw.cave || raw.caveId || raw['洞窟號'] || '').replace(/[^0-9]/g, '');
+            return {
+                id: cave,
+                title: raw.title || raw['標題'] || `${cave} 窟`,
+                subtitle: raw.subtitle || raw.period || raw['年代'] || '自訂筆記',
+                note: raw.note || raw.summary || raw['重點'] || raw.title || `${cave} 窟筆記`,
+                desc: raw.desc || raw.content || raw['詳細筆記'] || raw['內容'] || '',
+                isSpecial: Boolean(raw.isSpecial || raw['特窟'])
+            };
+        }
+
+        function upsertCustomNote(noteDraft) {
+            const note = normalizeNoteDraft(noteDraft);
+            if (!note.id) throw new Error('請輸入洞窟號。');
+            const coordinate = getCaveCoordinate(note.id);
+            if (!coordinate) throw new Error(`找不到 ${note.id} 窟座標。請先在座標表補這個窟號。`);
+            const finalNote = { ...note, segmentId: coordinate.segmentId, x: coordinate.x, y: coordinate.y, source: noteDraft.source || 'manual', updatedAt: new Date().toISOString() };
+            const localIdx = customNotes.findIndex((item) => item.id === finalNote.id);
+            if (localIdx >= 0) customNotes[localIdx] = finalNote; else customNotes.push(finalNote);
+            const builtInIdx = orangeNotesData.findIndex((item) => item.id === finalNote.id);
+            if (builtInIdx >= 0) orangeNotesData[builtInIdx] = { ...orangeNotesData[builtInIdx], ...finalNote }; else orangeNotesData.push(finalNote);
+            saveCustomNotes();
+            buildCoordinateMapFromExistingLabels();
+            renderNotebookWithCustomNotes();
+            return finalNote;
+        }
+
+        async function syncCustomNotesToGitHub() {
+            if (!navigator.onLine) { setToolStatus('目前離線：已存在本機，等聯網後再同步。', 'warn'); return; }
+            const payload = {
+                updatedAt: new Date().toISOString(),
+                notes: customNotes,
+                coordinateMap: caveCoordinateMap
+            };
+            const res = await fetch('./api/sync-notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`GitHub 同步失敗：${res.status} ${await res.text()}`);
+            setToolStatus('已透過 Vercel API 同步到 GitHub data/custom-notes.json。', 'ok');
+        }
+
+        function buildToolPanel() {
+            if (document.getElementById('mogao-tool-panel')) return;
+            const launcher = document.createElement('button');
+            launcher.id = 'mogao-tool-launcher';
+            launcher.type = 'button';
+            launcher.className = 'fixed right-4 bottom-4 z-50 bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-full shadow-2xl px-4 py-3 text-sm border border-orange-200';
+            launcher.textContent = '＋新增筆記';
+            document.body.appendChild(launcher);
+
+            const panel = document.createElement('div');
+            panel.id = 'mogao-tool-panel';
+            panel.className = 'hidden fixed inset-0 z-50 bg-black/70 p-4 overflow-y-auto font-sans';
+            panel.innerHTML = `
+                <div class="max-w-2xl mx-auto bg-stone-950 border border-orange-700/50 rounded-2xl shadow-2xl overflow-hidden text-stone-100">
+                    <div class="bg-orange-700 text-stone-950 px-4 py-3 flex justify-between items-center">
+                        <h3 class="font-black text-base">莫高窟個人新增工具</h3>
+                        <button id="mogao-tool-close" class="font-black text-xl">✕</button>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <button data-tab="manual" class="mogao-tab bg-orange-600 text-stone-950 font-bold rounded-lg py-2">手動新增</button>
+                            <button data-tab="ocr" class="mogao-tab bg-stone-800 rounded-lg py-2">圖片 OCR</button>
+                            <button data-tab="settings" class="mogao-tab bg-stone-800 rounded-lg py-2">同步設定</button>
+                        </div>
+                        <div id="mogao-tab-manual" class="mogao-tab-page space-y-3">
+                            <input id="manual-cave" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="洞窟號，例如 130">
+                            <input id="manual-title" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="標題，例如 130 窟｜南大像">
+                            <input id="manual-subtitle" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="年代 / 副標，例如 盛唐 ‧ 南大像">
+                            <input id="manual-note" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="橘色重點短句">
+                            <textarea id="manual-desc" class="w-full h-44 bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="詳細筆記"></textarea>
+                            <button id="manual-save" class="w-full bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-xl py-3">儲存並自動產生橘色標籤</button>
+                        </div>
+                        <div id="mogao-tab-ocr" class="mogao-tab-page hidden space-y-3">
+                            <p class="text-xs text-stone-400">圖片 OCR 只有聯網時可用。辨識後會先產生草稿，不會直接覆蓋資料。</p>
+                            <input id="ocr-image" type="file" accept="image/*" class="w-full text-sm">
+                            <button id="ocr-run" class="w-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-black rounded-xl py-3">上傳圖片並產生草稿</button>
+                            <textarea id="ocr-draft" class="w-full h-56 bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="OCR 草稿 JSON 會出現在這裡，可修改後儲存"></textarea>
+                            <button id="ocr-save" class="w-full bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-xl py-3">確認草稿並儲存</button>
+                        </div>
+                        <div id="mogao-tab-settings" class="mogao-tab-page hidden space-y-3">
+                            <div class="bg-stone-900/80 border border-stone-700 rounded-xl p-3 text-xs leading-6 text-stone-300">
+                                <p class="font-bold text-orange-300">同步設定由 Vercel Environment Variables 管理。</p>
+                                <p>手機端不需要輸入 GitHub Token 或 OpenAI API Key。</p>
+                                <p>需要的環境變數：GITHUB_TOKEN、OPENAI_API_KEY、GITHUB_OWNER、GITHUB_REPO、GITHUB_BRANCH、CUSTOM_NOTES_PATH。</p>
+                            </div>
+                            <button id="manual-sync" class="w-full bg-stone-800 hover:bg-stone-700 text-orange-300 font-bold rounded-xl py-3">立即同步 GitHub</button>
+                            <button id="export-json" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold rounded-xl py-3">匯出本機 JSON</button>
+                        </div>
+                        <p id="mogao-tool-status class="text-[11px] text-stone-300 font-sans"></p>
+                    </div>
+                </div>`;
+            document.body.appendChild(panel);
+        }
+
+        function wireToolPanel() {
+            const panel = document.getElementById('mogao-tool-panel');
+            document.getElementById('mogao-tool-launcher').onclick = () => {
+                panel.classList.remove('hidden');
+                setToolStatus(navigator.onLine ? '目前聯網：可使用 OCR / GitHub 同步。' : '目前離線：只能手動 key in，會先存本機。', navigator.onLine ? 'ok' : 'warn');
+            };
+            document.getElementById('mogao-tool-close').onclick = () => panel.classList.add('hidden');
+            document.querySelectorAll('.mogao-tab').forEach((btn) => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.mogao-tab').forEach((b) => b.className = 'mogao-tab bg-stone-800 rounded-lg py-2');
+                    btn.className = 'mogao-tab bg-orange-600 text-stone-950 font-bold rounded-lg py-2';
+                    document.querySelectorAll('.mogao-tab-page').forEach((p) => p.classList.add('hidden'));
+                    document.getElementById(`mogao-tab-${btn.dataset.tab}`).classList.remove('hidden');
+                };
+            });
+            document.getElementById('manual-save').onclick = async () => {
+                try {
+                    const saved = upsertCustomNote({
+                        id: document.getElementById('manual-cave').value,
+                        title: document.getElementById('manual-title').value,
+                        subtitle: document.getElementById('manual-subtitle').value,
+                        note: document.getElementById('manual-note').value,
+                        desc: document.getElementById('manual-desc').value,
+                        source: 'manual'
+                    });
+                    setToolStatus(`已儲存 ${saved.id} 窟，橘色標籤已自動產生。`, 'ok');
+                    if (navigator.onLine) await syncCustomNotesToGitHub();
+                } catch (err) { setToolStatus(err.message, 'bad'); }
+            };
+            document.getElementById('manual-sync').onclick = () => syncCustomNotesToGitHub().catch((err) => setToolStatus(err.message, 'bad'));
+            document.getElementById('export-json').onclick = () => {
+                const blob = new Blob([JSON.stringify({ updatedAt: new Date().toISOString(), notes: customNotes, coordinateMap: caveCoordinateMap }, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `mogao-custom-notes-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            };
+            document.getElementById('ocr-run').onclick = runOcrDraft;
+            document.getElementById('ocr-save').onclick = async () => {
+                try {
+                    const draft = JSON.parse(document.getElementById('ocr-draft').value);
+                    const saved = upsertCustomNote({ ...draft, source: 'ocr' });
+                    setToolStatus(`已儲存 OCR 草稿：${saved.id} 窟。`, 'ok');
+                    if (navigator.onLine) await syncCustomNotesToGitHub();
+                } catch (err) { setToolStatus(`草稿格式錯誤：${err.message}`, 'bad'); }
+            };
+        }
+
+        function fileToDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function runOcrDraft() {
+            if (!navigator.onLine) { setToolStatus('目前離線，OCR 不可用；請改用手動 key in。', 'warn'); return; }
+            const file = document.getElementById('ocr-image').files[0];
+            if (!file) { setToolStatus('請先選一張圖片。', 'warn'); return; }
+            setToolStatus('正在辨識圖片，請稍候...', 'stone');
+            const imageUrl = await fileToDataUrl(file);
+            const res = await fetch('./api/ocr-note', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageUrl })
+            });
+            if (!res.ok) throw new Error(`OCR API 失敗：${res.status} ${await res.text()}`);
+            const data = await res.json();
+            const cleaned = (data.text || '').replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+            document.getElementById('ocr-draft').value = cleaned;
+            setToolStatus('OCR 草稿已產生，請確認/修改後再儲存。', 'ok');
+        }
+
+        function initMogaoPersonalTools() {
+            loadCustomNotes();
+            buildCoordinateMapFromExistingLabels();
+            buildToolPanel();
+            wireToolPanel();
+            renderCustomMarkers();
+            window.addEventListener('online', () => syncCustomNotesToGitHub().catch((err) => setToolStatus(err.message, 'bad')));
+        }
+
+
         // 初始化
         window.onload = () => {
             applyTransform();
+            initMogaoPersonalTools();
             initNotebook();
+            renderCustomMarkers();
         };
     </script>
 
