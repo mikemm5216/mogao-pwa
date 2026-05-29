@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T15:27:43.824Z",
+  "updatedAt": "2026-05-29T15:28:46.316Z",
   "notes": [
     {
       "id": "130",
@@ -16,12 +16,19 @@
           "createdAt": "2026-05-29T15:27:42.971Z",
           "clientUploadId": "130-b965710ed24bc0b6",
           "pendingUpload": false
+        },
+        {
+          "src": "images/caves/130/130-3ff256bcea60c2ee.jpg",
+          "caption": "藻井",
+          "createdAt": "2026-05-29T15:28:45.749Z",
+          "clientUploadId": "130-3ff256bcea60c2ee",
+          "pendingUpload": false
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T15:27:43.155Z"
+      "updatedAt": "2026-05-29T15:28:45.874Z"
     }
   ],
   "coordinateMap": {
