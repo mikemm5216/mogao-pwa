@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-grandparent-mode-v3-auto-sync';
+const CACHE_NAME = 'mogao-pwa-v4-image-dedupe';
 const ASSETS = [
   './',
   './index.html',
