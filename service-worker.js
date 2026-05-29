@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-personal-notes-v2-vercel-fixed';
+const CACHE_NAME = 'mogao-pwa-grandparent-mode-v3-auto-sync';
 const ASSETS = [
   './',
   './index.html',
