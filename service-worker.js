@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-v4-image-dedupe';
+const CACHE_NAME = 'mogao-pwa-personal-notes-v2-vercel-fixed';
 const ASSETS = [
   './',
   './index.html',

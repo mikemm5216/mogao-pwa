@@ -1180,7 +1180,7 @@
             const wrap = document.getElementById('modal-cave-gallery-wrap');
             const gallery = document.getElementById('modal-cave-gallery');
             if (!wrap || !gallery) return;
-            const images = Array.isArray(note.images) ? note.images : [];
+            const images = dedupeImages(note.images);
             gallery.innerHTML = '';
             if (!images.length) {
                 wrap.classList.add('hidden');
@@ -1190,6 +1190,7 @@
                 const src = typeof img === 'string' ? img : img.src;
                 if (!src) return;
                 const caption = typeof img === 'string' ? '' : (img.caption || '');
+                const isPending = typeof img === 'object' && Boolean(img.pendingUpload);
                 const card = document.createElement('figure');
                 card.className = 'bg-white/75 border border-stone-300 rounded-xl overflow-hidden shadow-sm';
                 const image = document.createElement('img');
@@ -1197,10 +1198,10 @@
                 image.alt = caption || `${note.id} 窟實拍照片`;
                 image.className = 'w-full max-h-80 object-contain bg-stone-200';
                 card.appendChild(image);
-                if (caption) {
+                if (caption || isPending) {
                     const fig = document.createElement('figcaption');
                     fig.className = 'text-[11px] text-stone-600 px-3 py-2 leading-relaxed';
-                    fig.textContent = caption;
+                    fig.textContent = isPending ? `${caption || '未命名照片'}（待上傳）` : caption;
                     card.appendChild(fig);
                 }
                 gallery.appendChild(card);
@@ -1319,169 +1320,147 @@
         // 個人新增筆記 / OCR / GitHub 同步工具
         // ==========================================
         const CUSTOM_NOTES_KEY = 'mogao.customNotes.v1';
+        const PENDING_PHOTO_UPLOADS_KEY = 'mogao.pendingPhotoUploads.v1';
         const SYNC_CONFIG_KEY = 'mogao.githubSyncConfig.v1';
         const OPENAI_CONFIG_KEY = 'mogao.openaiOcrConfig.v1';
-        const PENDING_PHOTO_UPLOADS_KEY = 'mogao.pendingPhotoUploads.v1';
         let customNotes = [];
         let caveCoordinateMap = {};
-        let pendingPhotoUploads = [];
-        let isSyncingCustomNotes = false;
-        let isUploadingPhoto = false;
-        let isProcessingPendingUploads = false;
+        let isFlushingPendingPhotos = false;
 
         function safeJsonParse(raw, fallback) {
             try { return raw ? JSON.parse(raw) : fallback; } catch (_) { return fallback; }
         }
 
-        function dedupeImages(images) {
-            const seen = new Set();
-            return (Array.isArray(images) ? images : []).filter((img) => {
-                const src = typeof img === 'string' ? img : img && img.src;
-                const key = src || JSON.stringify(img);
-                if (!key || seen.has(key)) return false;
-                seen.add(key);
-                return true;
-            });
-        }
-
-        function mergeCustomNoteIntoData(note) {
-            if (!note || !note.id) return;
-            const idx = orangeNotesData.findIndex((item) => item.id === note.id);
-            if (idx >= 0) {
-                const current = orangeNotesData[idx];
-                orangeNotesData[idx] = {
-                    ...current,
-                    ...note,
-                    images: dedupeImages([...(current.images || []), ...(note.images || [])])
-                };
-            } else {
-                orangeNotesData.push({ ...note, images: dedupeImages(note.images || []) });
-            }
-        }
-
-        function mergeCustomNotesList(notes) {
-            (Array.isArray(notes) ? notes : []).forEach((incoming) => {
-                if (!incoming || !incoming.id) return;
-                const idx = customNotes.findIndex((item) => item.id === incoming.id);
-                if (idx >= 0) {
-                    customNotes[idx] = {
-                        ...customNotes[idx],
-                        ...incoming,
-                        images: dedupeImages([...(customNotes[idx].images || []), ...(incoming.images || [])])
-                    };
-                } else {
-                    customNotes.push({ ...incoming, images: dedupeImages(incoming.images || []) });
-                }
-            });
-            customNotes.forEach(mergeCustomNoteIntoData);
-            saveCustomNotes();
-        }
-
-        function loadPendingPhotoUploads() {
-            pendingPhotoUploads = safeJsonParse(localStorage.getItem(PENDING_PHOTO_UPLOADS_KEY), []);
-        }
-
-        function savePendingPhotoUploads() {
-            localStorage.setItem(PENDING_PHOTO_UPLOADS_KEY, JSON.stringify(pendingPhotoUploads));
-        }
-
         function loadCustomNotes() {
-            customNotes = safeJsonParse(localStorage.getItem(CUSTOM_NOTES_KEY), []);
-            loadPendingPhotoUploads();
-            mergeCustomNotesList(customNotes);
-        }
-
-        async function loadRemoteCustomNotes() {
-            if (!navigator.onLine) return;
-            const res = await fetch(`./data/custom-notes.json?ts=${Date.now()}`, { cache: 'no-store' });
-            if (!res.ok) return;
-            const data = await res.json();
-            mergeCustomNotesList(data.notes || []);
-            if (data.coordinateMap && typeof data.coordinateMap === 'object') {
-                caveCoordinateMap = { ...caveCoordinateMap, ...data.coordinateMap };
-            }
+            customNotes = safeJsonParse(localStorage.getItem(CUSTOM_NOTES_KEY), []).map((note) => ({ ...note, images: dedupeImages(note.images) }));
+            customNotes.forEach((note) => {
+                const existingIdx = orangeNotesData.findIndex((item) => item.id === note.id);
+                if (existingIdx >= 0) orangeNotesData[existingIdx] = { ...orangeNotesData[existingIdx], ...note, images: dedupeImages([...(orangeNotesData[existingIdx].images || []), ...(note.images || [])]) };
+                else orangeNotesData.push(note);
+            });
+            saveCustomNotes();
         }
 
         function saveCustomNotes() {
             localStorage.setItem(CUSTOM_NOTES_KEY, JSON.stringify(customNotes));
         }
 
-        function setButtonBusy(buttonId, busy, busyText, idleText) {
-            const btn = document.getElementById(buttonId);
-            if (!btn) return;
-            btn.disabled = busy;
-            btn.classList.toggle('opacity-60', busy);
-            btn.classList.toggle('cursor-not-allowed', busy);
-            btn.textContent = busy ? busyText : idleText;
+
+        function normalizeImageRecord(image) {
+            if (!image) return null;
+            if (typeof image === 'string') return { src: image, caption: '', createdAt: '', clientUploadId: '' };
+            return {
+                src: image.src || '',
+                caption: image.caption || '',
+                createdAt: image.createdAt || '',
+                clientUploadId: image.clientUploadId || '',
+                pendingUpload: Boolean(image.pendingUpload)
+            };
         }
 
-        function makeClientUploadId(caveId, file) {
-            return String(`${caveId}-${file.name || 'photo'}-${file.size || 0}-${file.lastModified || Date.now()}`)
-                .replace(/[^a-zA-Z0-9_-]/g, '-')
-                .slice(0, 120);
+        function imageKey(image) {
+            const normalized = normalizeImageRecord(image);
+            if (!normalized) return '';
+            return normalized.clientUploadId || normalized.src || '';
         }
 
-        function replacePendingImage(target, clientUploadId, pendingSrc, finalImage) {
-            if (!target) return;
-            const current = Array.isArray(target.images) ? target.images : [];
-            const filtered = current.filter((img) => {
-                const src = typeof img === 'string' ? img : img && img.src;
-                const pendingId = typeof img === 'string' ? '' : (img && img.clientUploadId);
-                if (clientUploadId && pendingId === clientUploadId) return false;
-                if (pendingSrc && src === pendingSrc) return false;
+        function dedupeImages(images) {
+            const seen = new Set();
+            return (Array.isArray(images) ? images : []).map(normalizeImageRecord).filter((img) => {
+                if (!img || !img.src) return false;
+                const key = imageKey(img);
+                if (!key || seen.has(key)) return false;
+                seen.add(key);
                 return true;
             });
-            target.images = dedupeImages([...filtered, finalImage]);
         }
 
-        function enqueuePendingPhotoUpload(upload) {
-            const idx = pendingPhotoUploads.findIndex((item) => item.clientUploadId === upload.clientUploadId);
-            if (idx >= 0) pendingPhotoUploads[idx] = { ...pendingPhotoUploads[idx], ...upload };
-            else pendingPhotoUploads.push(upload);
-            savePendingPhotoUploads();
+        function getPendingPhotoUploads() {
+            return safeJsonParse(localStorage.getItem(PENDING_PHOTO_UPLOADS_KEY), []);
         }
 
-        function removePendingPhotoUpload(clientUploadId) {
-            pendingPhotoUploads = pendingPhotoUploads.filter((item) => item.clientUploadId !== clientUploadId);
-            savePendingPhotoUploads();
+        function savePendingPhotoUploads(queue) {
+            localStorage.setItem(PENDING_PHOTO_UPLOADS_KEY, JSON.stringify(Array.isArray(queue) ? queue : []));
         }
 
-        function ensureCustomNoteImageShell(caveId) {
-            return ensureCustomNoteShell(caveId);
+        function findPendingTask(clientUploadId) {
+            return getPendingPhotoUploads().find((item) => item.clientUploadId === clientUploadId);
         }
 
-        async function processPendingPhotoUploads() {
-            if (!navigator.onLine || isProcessingPendingUploads || pendingPhotoUploads.length === 0) return;
-            isProcessingPendingUploads = true;
-            setToolStatus('網路恢復，正在自動上傳暫存照片...', 'stone');
-            try {
-                const queue = [...pendingPhotoUploads];
-                for (const item of queue) {
-                    const res = await fetch('./api/upload-cave-image', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            caveId: item.caveId,
-                            caption: item.caption || '',
-                            imageDataUrl: item.imageDataUrl,
-                            clientUploadId: item.clientUploadId
-                        })
-                    });
-                    if (!res.ok) throw new Error(`照片上傳失敗：${res.status} ${await res.text()}`);
-                    const data = await res.json();
-                    const { note, local } = ensureCustomNoteImageShell(item.caveId);
-                    replacePendingImage(note, item.clientUploadId, item.imageDataUrl, data.image);
-                    replacePendingImage(local, item.clientUploadId, item.imageDataUrl, data.image);
-                    local.updatedAt = new Date().toISOString();
-                    removePendingPhotoUpload(item.clientUploadId);
-                }
-                saveCustomNotes();
-                renderNotebookWithCustomNotes();
-                await syncCustomNotesToGitHub();
-                setToolStatus('暫存內容已自動上傳完成。', 'ok');
-            } finally {
-                isProcessingPendingUploads = false;
-            }
+        function hasImageClientId(note, clientUploadId) {
+            return Boolean(clientUploadId) && Array.isArray(note?.images) && note.images.some((img) => imageKey(img) === clientUploadId);
+        }
+
+        function findCustomNoteById(caveId) {
+            return customNotes.find((item) => item.id === String(caveId));
+        }
+
+        function guessPhotoCaption(baseCaption, fileName, index, total, caveId) {
+            const cleanName = String(fileName || '').replace(/\.[^.]+$/, '');
+            if (baseCaption && total > 1) return `${baseCaption}（${index + 1}）`;
+            if (baseCaption) return baseCaption;
+            return cleanName || `${caveId} 窟照片 ${index + 1}`;
+        }
+
+        async function sha256FromDataUrl(dataUrl) {
+            const base64 = String(dataUrl || '').split(',')[1] || '';
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            const digest = await crypto.subtle.digest('SHA-256', bytes.buffer);
+            return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function mergeImagesIntoNote(note, incomingImages) {
+            note.images = dedupeImages([...(Array.isArray(note.images) ? note.images : []), ...(Array.isArray(incomingImages) ? incomingImages : [])]);
+            return note;
+        }
+
+        function addPendingImageToLocalNotes(caveId, image) {
+            const { note, local } = ensureCustomNoteShell(caveId);
+            mergeImagesIntoNote(note, [image]);
+            mergeImagesIntoNote(local, [image]);
+            local.updatedAt = new Date().toISOString();
+            saveCustomNotes();
+            renderNotebookWithCustomNotes();
+        }
+
+        function replacePendingImageWithRemote(caveId, clientUploadId, remoteImage) {
+            [orangeNotesData, customNotes].forEach((collection) => {
+                const note = collection.find((item) => item.id === String(caveId));
+                if (!note) return;
+                const current = Array.isArray(note.images) ? note.images : [];
+                const next = [];
+                let replaced = false;
+                current.forEach((img) => {
+                    const key = imageKey(img);
+                    if (key === clientUploadId) {
+                        if (!replaced) {
+                            next.push({ ...remoteImage, clientUploadId });
+                            replaced = true;
+                        }
+                    } else {
+                        next.push(normalizeImageRecord(img));
+                    }
+                });
+                if (!replaced) next.push({ ...remoteImage, clientUploadId });
+                note.images = dedupeImages(next);
+                note.updatedAt = new Date().toISOString();
+            });
+            saveCustomNotes();
+            renderNotebookWithCustomNotes();
+        }
+
+        function serializeNotesForSync() {
+            return customNotes.map((note) => ({
+                ...note,
+                images: dedupeImages(note.images).filter((img) => img.src && !String(img.src).startsWith('data:')).map((img) => ({
+                    src: img.src,
+                    caption: img.caption || '',
+                    createdAt: img.createdAt || '',
+                    clientUploadId: img.clientUploadId || ''
+                }))
+            }));
         }
 
         function buildCoordinateMapFromExistingLabels() {
@@ -1569,10 +1548,22 @@
             if (!note.id) throw new Error('請輸入洞窟號。');
             const coordinate = getCaveCoordinate(note.id);
             if (!coordinate) throw new Error(`找不到 ${note.id} 窟座標。請先在座標表補這個窟號。`);
-            const finalNote = { ...note, segmentId: coordinate.segmentId, x: coordinate.x, y: coordinate.y, source: noteDraft.source || 'manual', updatedAt: new Date().toISOString() };
-            const localIdx = customNotes.findIndex((item) => item.id === finalNote.id);
+            const localIdx = customNotes.findIndex((item) => item.id === note.id);
+            const builtInIdx = orangeNotesData.findIndex((item) => item.id === note.id);
+            const previousLocal = localIdx >= 0 ? customNotes[localIdx] : {};
+            const previousBuiltIn = builtInIdx >= 0 ? orangeNotesData[builtInIdx] : {};
+            const finalNote = {
+                ...previousBuiltIn,
+                ...previousLocal,
+                ...note,
+                segmentId: coordinate.segmentId,
+                x: coordinate.x,
+                y: coordinate.y,
+                source: noteDraft.source || previousLocal.source || 'manual',
+                updatedAt: new Date().toISOString(),
+                images: dedupeImages([...(previousBuiltIn.images || []), ...(previousLocal.images || []), ...(noteDraft.images || [])])
+            };
             if (localIdx >= 0) customNotes[localIdx] = finalNote; else customNotes.push(finalNote);
-            const builtInIdx = orangeNotesData.findIndex((item) => item.id === finalNote.id);
             if (builtInIdx >= 0) orangeNotesData[builtInIdx] = { ...orangeNotesData[builtInIdx], ...finalNote }; else orangeNotesData.push(finalNote);
             saveCustomNotes();
             buildCoordinateMapFromExistingLabels();
@@ -1580,26 +1571,118 @@
             return finalNote;
         }
 
-        async function syncCustomNotesToGitHub() {
-            if (!navigator.onLine) { setToolStatus('目前沒網路，先存在手機；恢復網路後會自動上傳。', 'warn'); return; }
-            if (isSyncingCustomNotes) return;
-            isSyncingCustomNotes = true;
+        async function syncCustomNotesToGitHub(skipFlush = false) {
+            if (!navigator.onLine) { setToolStatus('目前離線：已存在本機，等聯網後再同步。', 'warn'); return; }
+            if (!skipFlush) await flushPendingPhotoUploads(true);
+            const payload = {
+                updatedAt: new Date().toISOString(),
+                notes: serializeNotesForSync(),
+                coordinateMap: caveCoordinateMap
+            };
+            const res = await fetch('./api/sync-notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`GitHub 同步失敗：${res.status} ${await res.text()}`);
+            setToolStatus('已透過 Vercel API 同步到 GitHub data/custom-notes.json。', 'ok');
+        }
+
+        async function flushPendingPhotoUploads(silent = false) {
+            if (isFlushingPendingPhotos || !navigator.onLine) return;
+            let queue = getPendingPhotoUploads();
+            if (!queue.length) return;
+            isFlushingPendingPhotos = true;
             try {
-                const payload = {
-                    updatedAt: new Date().toISOString(),
-                    notes: customNotes,
-                    coordinateMap: caveCoordinateMap
-                };
-                const res = await fetch('./api/sync-notes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!res.ok) throw new Error(`GitHub 同步失敗：${res.status} ${await res.text()}`);
-                setToolStatus('已保存。', 'ok');
+                if (!silent) setToolStatus(`偵測到 ${queue.length} 張待上傳照片，正在自動補傳...`, 'stone');
+                for (const task of [...queue]) {
+                    try {
+                        const res = await fetch('./api/upload-cave-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                caveId: task.caveId,
+                                caption: task.caption,
+                                imageDataUrl: task.imageDataUrl,
+                                clientUploadId: task.clientUploadId,
+                                fileExt: task.fileExt || 'jpg'
+                            })
+                        });
+                        if (!res.ok) throw new Error(`照片上傳失敗：${res.status} ${await res.text()}`);
+                        const data = await res.json();
+                        replacePendingImageWithRemote(task.caveId, task.clientUploadId, data.image);
+                        queue = queue.filter((item) => item.clientUploadId !== task.clientUploadId);
+                        savePendingPhotoUploads(queue);
+                    } catch (err) {
+                        console.error(err);
+                        if (!silent) setToolStatus(`有照片補傳失敗，保留待下次自動重試：${err.message}`, 'warn');
+                        return;
+                    }
+                }
+                if (!silent) setToolStatus('待上傳照片已全部補傳完成。', 'ok');
             } finally {
-                isSyncingCustomNotes = false;
+                isFlushingPendingPhotos = false;
             }
+        }
+
+        async function queueAndMaybeUploadPhotos(files, caveId, baseCaption) {
+            const id = String(caveId || '').replace(/[^0-9]/g, '');
+            if (!id) throw new Error('請先輸入洞窟號。');
+            if (!getCaveCoordinate(id)) throw new Error(`找不到 ${id} 窟座標，不能掛橘色標籤。`);
+            const fileList = Array.from(files || []);
+            if (!fileList.length) throw new Error('請先選至少一張洞窟照片。');
+            let queue = getPendingPhotoUploads();
+            let added = 0;
+            let skipped = 0;
+            for (let index = 0; index < fileList.length; index++) {
+                const file = fileList[index];
+                const imageDataUrl = await imageFileToCompressedDataUrl(file);
+                const hash = await sha256FromDataUrl(imageDataUrl);
+                const clientUploadId = `${id}-${hash.slice(0, 16)}`;
+                const alreadyExists = hasImageClientId(findCustomNoteById(id), clientUploadId) || hasImageClientId(orangeNotesData.find((item) => item.id === id), clientUploadId) || Boolean(findPendingTask(clientUploadId));
+                if (alreadyExists) { skipped += 1; continue; }
+                const caption = guessPhotoCaption(baseCaption, file.name, index, fileList.length, id);
+                const localImage = {
+                    src: imageDataUrl,
+                    caption,
+                    createdAt: new Date().toISOString(),
+                    clientUploadId,
+                    pendingUpload: true
+                };
+                addPendingImageToLocalNotes(id, localImage);
+                const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+                queue.push({
+                    caveId: id,
+                    caption,
+                    imageDataUrl,
+                    clientUploadId,
+                    fileExt: ext,
+                    createdAt: new Date().toISOString()
+                });
+                added += 1;
+            }
+            savePendingPhotoUploads(queue);
+            if (navigator.onLine && added > 0) {
+                await flushPendingPhotoUploads(true);
+                await syncCustomNotesToGitHub(true);
+            }
+            return { added, skipped, offline: !navigator.onLine };
+        }
+
+        async function syncCustomNotesToGitHub() {
+            if (!navigator.onLine) { setToolStatus('目前離線：已存在本機，等聯網後再同步。', 'warn'); return; }
+            const payload = {
+                updatedAt: new Date().toISOString(),
+                notes: customNotes,
+                coordinateMap: caveCoordinateMap
+            };
+            const res = await fetch('./api/sync-notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`GitHub 同步失敗：${res.status} ${await res.text()}`);
+            setToolStatus('已透過 Vercel API 同步到 GitHub data/custom-notes.json。', 'ok');
         }
 
         function buildToolPanel() {
@@ -1621,10 +1704,11 @@
                         <button id="mogao-tool-close" class="font-black text-xl">✕</button>
                     </div>
                     <div class="p-4 space-y-4">
-                        <div class="grid grid-cols-3 gap-2 text-xs">
-                            <button data-tab="manual" class="mogao-tab bg-orange-600 text-stone-950 font-bold rounded-lg py-2">新增文字筆記</button>
-                            <button data-tab="photo" class="mogao-tab bg-stone-800 rounded-lg py-2">新增洞窟照片</button>
-                            <button data-tab="ocr" class="mogao-tab bg-stone-800 rounded-lg py-2">拍照辨識文字</button>
+                        <div class="grid grid-cols-4 gap-2 text-xs">
+                            <button data-tab="manual" class="mogao-tab bg-orange-600 text-stone-950 font-bold rounded-lg py-2">手動新增</button>
+                            <button data-tab="photo" class="mogao-tab bg-stone-800 rounded-lg py-2">洞窟照片</button>
+                            <button data-tab="ocr" class="mogao-tab bg-stone-800 rounded-lg py-2">圖片 OCR</button>
+                            <button data-tab="settings" class="mogao-tab bg-stone-800 rounded-lg py-2">同步設定</button>
                         </div>
                         <div id="mogao-tab-manual" class="mogao-tab-page space-y-3">
                             <input id="manual-cave" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="洞窟號，例如 130">
@@ -1635,11 +1719,11 @@
                             <button id="manual-save" class="w-full bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-xl py-3">儲存並自動產生橘色標籤</button>
                         </div>
                         <div id="mogao-tab-photo" class="mogao-tab-page hidden space-y-3">
-                            <p class="text-xs text-stone-400">拍完可直接保存到洞窟；有網路會自動上傳，沒網路會先暫存在手機，恢復網路後自動補傳。</p>
+                            <p class="text-xs text-stone-400">可一次選多張照片。離線時會先暫存在手機本機並顯示在洞窟筆記內；恢復聯網後會自動補傳到 GitHub，同一張照片不會重複加入。</p>
                             <input id="photo-cave" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="洞窟號，例如 130">
                             <input id="photo-caption" class="w-full bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="照片說明，例如 130窟南大像外觀">
-                            <input id="photo-file" type="file" accept="image/*" class="w-full text-sm">
-                            <button id="photo-upload" class="w-full bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-xl py-3">上傳照片並掛到洞窟</button>
+                            <input id="photo-file" type="file" accept="image/*" multiple class="w-full text-sm">
+                            <button id="photo-upload" class="w-full bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-xl py-3">新增照片（可多張）並掛到洞窟</button>
                         </div>
                         <div id="mogao-tab-ocr" class="mogao-tab-page hidden space-y-3">
                             <p class="text-xs text-stone-400">圖片 OCR 只有聯網時可用。辨識後會先產生草稿，不會直接覆蓋資料。</p>
@@ -1647,6 +1731,15 @@
                             <button id="ocr-run" class="w-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-black rounded-xl py-3">上傳圖片並產生草稿</button>
                             <textarea id="ocr-draft" class="w-full h-56 bg-stone-900 border border-stone-700 rounded-lg p-2" placeholder="OCR 草稿 JSON 會出現在這裡，可修改後儲存"></textarea>
                             <button id="ocr-save" class="w-full bg-orange-600 hover:bg-orange-500 text-stone-950 font-black rounded-xl py-3">確認草稿並儲存</button>
+                        </div>
+                        <div id="mogao-tab-settings" class="mogao-tab-page hidden space-y-3">
+                            <div class="bg-stone-900/80 border border-stone-700 rounded-xl p-3 text-xs leading-6 text-stone-300">
+                                <p class="font-bold text-orange-300">同步設定由 Vercel Environment Variables 管理。</p>
+                                <p>手機端不需要輸入 GitHub Token 或 OpenAI API Key。</p>
+                                <p>需要的環境變數：GITHUB_TOKEN、OPENAI_API_KEY、GITHUB_OWNER、GITHUB_REPO、GITHUB_BRANCH、CUSTOM_NOTES_PATH。</p>
+                            </div>
+                            <button id="manual-sync" class="w-full bg-stone-800 hover:bg-stone-700 text-orange-300 font-bold rounded-xl py-3">立即同步 GitHub</button>
+                            <button id="export-json" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold rounded-xl py-3">匯出本機 JSON</button>
                         </div>
                         <p id="mogao-tool-status" class="text-[11px] text-stone-300 font-sans"></p>
                     </div>
@@ -1658,7 +1751,7 @@
             const panel = document.getElementById('mogao-tool-panel');
             document.getElementById('mogao-tool-launcher').onclick = () => {
                 panel.classList.remove('hidden');
-                setToolStatus(navigator.onLine ? '目前聯網：保存後會自動上傳。' : '目前沒網路，輸入內容會先暫存在手機。', navigator.onLine ? 'ok' : 'warn');
+                setToolStatus(navigator.onLine ? '目前聯網：可使用 OCR / GitHub 同步。' : '目前離線：只能手動 key in，會先存本機。', navigator.onLine ? 'ok' : 'warn');
             };
             document.getElementById('mogao-tool-close').onclick = () => panel.classList.add('hidden');
             document.querySelectorAll('.mogao-tab').forEach((btn) => {
@@ -1683,7 +1776,26 @@
                     if (navigator.onLine) await syncCustomNotesToGitHub();
                 } catch (err) { setToolStatus(err.message, 'bad'); }
             };
-            document.getElementById('photo-upload').onclick = () => uploadCavePhoto().catch((err) => setToolStatus(err.message, 'bad'));
+            document.getElementById('manual-sync').onclick = () => syncCustomNotesToGitHub().catch((err) => setToolStatus(err.message, 'bad'));
+            document.getElementById('export-json').onclick = () => {
+                const blob = new Blob([JSON.stringify({ updatedAt: new Date().toISOString(), notes: customNotes, coordinateMap: caveCoordinateMap }, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `mogao-custom-notes-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            };
+            document.getElementById('photo-upload').onclick = async () => {
+                try {
+                    const result = await uploadCavePhoto();
+                    if (!result) return;
+                    const parts = [];
+                    if (result.added) parts.push(`新增 ${result.added} 張`);
+                    if (result.skipped) parts.push(`略過重複 ${result.skipped} 張`);
+                    parts.push(result.offline ? '目前離線，已存本機等待自動補傳。' : '已自動同步完成。');
+                    setToolStatus(parts.join('｜'), 'ok');
+                } catch (err) { setToolStatus(err.message, 'bad'); }
+            };
             document.getElementById('ocr-run').onclick = runOcrDraft;
             document.getElementById('ocr-save').onclick = async () => {
                 try {
@@ -1741,62 +1853,12 @@
         }
 
         async function uploadCavePhoto() {
-            if (isUploadingPhoto) {
-                setToolStatus('照片正在保存中，請不要重複點擊。', 'warn');
-                return;
-            }
             const caveId = document.getElementById('photo-cave').value;
             const caption = document.getElementById('photo-caption').value;
-            const file = document.getElementById('photo-file').files[0];
-            if (!file) { setToolStatus('請先選一張洞窟照片。', 'warn'); return; }
-            const id = String(caveId || '').replace(/[^0-9]/g, '');
-            if (!getCaveCoordinate(id)) { setToolStatus(`找不到 ${id || '?'} 窟座標，不能掛橘色標籤。`, 'bad'); return; }
-            const clientUploadId = makeClientUploadId(id, file);
-            const existingLocal = customNotes.find((item) => item.id === id);
-            if (existingLocal && Array.isArray(existingLocal.images) && existingLocal.images.some((img) => img && img.clientUploadId === clientUploadId)) {
-                setToolStatus('這張照片已經保存過了。', 'warn');
-                return;
-            }
-            isUploadingPhoto = true;
-            setButtonBusy('photo-upload', true, '保存中...', '上傳照片並掛到洞窟');
-            try {
-                setToolStatus(navigator.onLine ? '正在保存照片...' : '目前沒網路，照片會先暫存在手機。', 'stone');
-                const imageDataUrl = await imageFileToCompressedDataUrl(file);
-                const previewImage = { src: imageDataUrl, caption: caption || '', createdAt: new Date().toISOString(), clientUploadId, pending: !navigator.onLine };
-                const { note, local } = ensureCustomNoteImageShell(id);
-                replacePendingImage(note, clientUploadId, '', previewImage);
-                replacePendingImage(local, clientUploadId, '', previewImage);
-                local.updatedAt = new Date().toISOString();
-                mergeCustomNoteIntoData(local);
-                saveCustomNotes();
-                renderNotebookWithCustomNotes();
-
-                if (!navigator.onLine) {
-                    enqueuePendingPhotoUpload({ caveId: id, caption, imageDataUrl, clientUploadId, createdAt: new Date().toISOString() });
-                    setToolStatus('已暫存到手機；恢復網路後會自動上傳。', 'warn');
-                    return;
-                }
-
-                const res = await fetch('./api/upload-cave-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ caveId: id, caption, imageDataUrl, clientUploadId })
-                });
-                if (!res.ok) throw new Error(`照片上傳失敗：${res.status} ${await res.text()}`);
-                const data = await res.json();
-                const imageRecord = { ...data.image, clientUploadId };
-                replacePendingImage(note, clientUploadId, imageDataUrl, imageRecord);
-                replacePendingImage(local, clientUploadId, imageDataUrl, imageRecord);
-                local.updatedAt = new Date().toISOString();
-                mergeCustomNoteIntoData(local);
-                saveCustomNotes();
-                renderNotebookWithCustomNotes();
-                await syncCustomNotesToGitHub();
-                setToolStatus(`已保存到 ${id} 窟。`, 'ok');
-            } finally {
-                isUploadingPhoto = false;
-                setButtonBusy('photo-upload', false, '保存中...', '上傳照片並掛到洞窟');
-            }
+            const files = document.getElementById('photo-file').files;
+            const result = await queueAndMaybeUploadPhotos(files, caveId, caption);
+            document.getElementById('photo-file').value = '';
+            return result;
         }
 
         async function runOcrDraft() {
@@ -1817,34 +1879,30 @@
             setToolStatus('OCR 草稿已產生，請確認/修改後再儲存。', 'ok');
         }
 
-        async function initMogaoPersonalTools() {
+        function initMogaoPersonalTools() {
             loadCustomNotes();
-            buildCoordinateMapFromExistingLabels();
-            await loadRemoteCustomNotes().catch((err) => console.warn('load remote custom notes failed', err));
             buildCoordinateMapFromExistingLabels();
             buildToolPanel();
             wireToolPanel();
-            renderNotebookWithCustomNotes();
-            if (navigator.onLine) {
-                await processPendingPhotoUploads().catch((err) => setToolStatus(err.message, 'bad'));
-                await syncCustomNotesToGitHub().catch((err) => setToolStatus(err.message, 'bad'));
-            }
+            renderCustomMarkers();
             window.addEventListener('online', async () => {
-                setToolStatus('網路恢復，正在自動上傳...', 'stone');
-                await loadRemoteCustomNotes().catch((err) => console.warn('load remote custom notes failed', err));
-                await processPendingPhotoUploads().catch((err) => setToolStatus(err.message, 'bad'));
-                renderNotebookWithCustomNotes();
-                await syncCustomNotesToGitHub().catch((err) => setToolStatus(err.message, 'bad'));
+                try {
+                    await flushPendingPhotoUploads();
+                    await syncCustomNotesToGitHub(true);
+                } catch (err) { setToolStatus(err.message, 'bad'); }
             });
         }
 
 
         // 初始化
-        window.onload = async () => {
+        window.onload = () => {
             applyTransform();
-            await initMogaoPersonalTools();
+            initMogaoPersonalTools();
             initNotebook();
             renderCustomMarkers();
+            if (navigator.onLine) {
+                flushPendingPhotoUploads(true).then(() => syncCustomNotesToGitHub(true)).catch((err) => console.error(err));
+            }
         };
     </script>
 
