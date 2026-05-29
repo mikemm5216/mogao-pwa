@@ -1,32 +1,5 @@
 {
-  "updatedAt": "2026-05-29T15:15:00.000Z",
-  "notes": [
-    {
-      "id": "130",
-      "segmentId": 11,
-      "title": "130 窟",
-      "subtitle": "盛唐 ‧ 南大像／彌勒大佛",
-      "note": "130 窟南大像（盛唐）",
-      "isSpecial": true,
-      "images": [
-        {
-          "src": "images/caves/130/130-36684-png-729328-1780065290069.jpg",
-          "caption": "南大像佛頭",
-          "createdAt": "2026-05-29T14:52:59.591Z",
-          "clientUploadId": "130-36684-png-729328-1780065290069"
-        }
-      ],
-      "x": 42.4,
-      "y": 76,
-      "source": "photo",
-      "updatedAt": "2026-05-29T15:15:00.000Z"
-    }
-  ],
-  "coordinateMap": {
-    "130": {
-      "segmentId": 11,
-      "x": 42.4,
-      "y": 76
-    }
-  }
+  "updatedAt": null,
+  "notes": [],
+  "coordinateMap": {}
 }
