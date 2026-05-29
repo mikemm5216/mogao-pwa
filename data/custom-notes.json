@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T16:47:06.198Z",
+  "updatedAt": "2026-05-29T16:48:45.912Z",
   "notes": [
     {
       "id": "130",
@@ -21,36 +21,12 @@
           "caption": "藻井",
           "createdAt": "2026-05-29T15:28:45.749Z",
           "clientUploadId": "130-3ff256bcea60c2ee"
-        },
-        {
-          "src": "images/caves/130/130-5bd424bb7c6154e7.jpg",
-          "caption": "甬道北壁-晉昌郡太守樂庭懐",
-          "createdAt": "2026-05-29T15:39:44.410Z",
-          "clientUploadId": "130-5bd424bb7c6154e7"
-        },
-        {
-          "src": "images/caves/130/130-958a2992beeb680f.jpg",
-          "caption": "甬道南壁-都督夫人供養像",
-          "createdAt": "2026-05-29T15:41:12.062Z",
-          "clientUploadId": "130-958a2992beeb680f"
-        },
-        {
-          "src": "images/caves/130/130-75b4eba1e4089911.jpg",
-          "caption": "甬道南壁-現狀",
-          "createdAt": "2026-05-29T15:41:53.274Z",
-          "clientUploadId": "130-75b4eba1e4089911"
-        },
-        {
-          "src": "images/caves/130/130-95c7c5cabb76add4.png",
-          "caption": "南大佛彌勒佛像",
-          "createdAt": "2026-05-29T16:41:22.059Z",
-          "clientUploadId": "130-95c7c5cabb76add4"
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T16:41:22.259Z"
+      "updatedAt": "2026-05-29T15:28:45.874Z"
     }
   ],
   "coordinateMap": {
