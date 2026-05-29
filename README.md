@@ -1,22 +1,38 @@
-# 莫高窟橘色筆記 PWA
+莫高窟崖面筆記 — PWA 離線版
+================================
 
-手機優先、可安裝到主畫面、可離線使用的莫高窟橘色筆記 PWA。
+【這是什麼】
+一個可安裝到手機主畫面、完全離線使用的網頁 App，
+保留原本所有互動：橫向滾動長卷全景圖、點橘色標記跳出洞窟筆記、自動播放等。
 
-## 使用方式
+【如何部署（擇一）】
 
-1. 部署到 GitHub Pages。
-2. 用 iPhone Safari 開啟 GitHub Pages 網址。
-3. 點 Safari 分享按鈕。
-4. 選「加入主畫面」。
-5. 第一次完整開啟後，之後可離線使用。
+▸ GitHub Pages
+  1. 在 GitHub 建一個 repo（可設 Public）
+  2. 把這個資料夾內所有檔案上傳到 repo 根目錄
+  3. Settings → Pages → Source 選 main 分支 / root
+  4. 等一兩分鐘，會給你一個 https://你的帳號.github.io/repo名/ 網址
 
-## 檔案
+▸ Netlify（最簡單，免帳號也行）
+  1. 開 https://app.netlify.com/drop
+  2. 直接把「整個資料夾」拖進去
+  3. 立刻得到一個 https 網址
 
-- `index.html`：手機優先卡片版，內含 35 筆橘色筆記。
-- `manifest.webmanifest`：PWA 安裝設定。
-- `service-worker.js`：離線快取。
-- `icons/`：PWA 圖示。
+▸ Cloudflare Pages 亦可，作法類似。
 
-## 注意
+【手機安裝（拿到 https 網址後）】
+  iPhone：用 Safari 開網址 → 分享鈕 → 「加入主畫面」
+  Android：用 Chrome 開網址 → 會跳「安裝」提示，或選單 →「安裝應用程式」
+  安裝後第一次開啟會自動快取，之後飛航模式也能用。
 
-PWA 離線安裝需要 HTTPS，因此不要用 iPhone 檔案 App 直接開本機 HTML 來測試 PWA。請先部署到 GitHub Pages、Netlify、Cloudflare Pages 或其他 HTTPS 靜態站。
+【檔案說明】
+  index.html              主程式
+  manifest.webmanifest    App 設定（名稱、圖示）
+  sw.js                   離線快取核心
+  assets/tw3.css          樣式
+  assets/fonts.css        內嵌繁體中文字型
+  icons/                  App 圖示
+
+【更新內容後】
+  改完檔案重新上傳，並把 sw.js 裡的 CACHE_VERSION 改個新字串
+  （例如 mogao-v2），使用者下次開啟就會拿到新版。
