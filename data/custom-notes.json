@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T16:49:46.491Z",
+  "updatedAt": "2026-05-29T16:50:20.926Z",
   "notes": [
     {
       "id": "130",
@@ -45,12 +45,18 @@
           "caption": "南大佛彌勒佛像",
           "createdAt": "2026-05-29T16:41:22.059Z",
           "clientUploadId": "130-95c7c5cabb76add4"
+        },
+        {
+          "src": "images/caves/130/130-b25c73058c39d44f.jpg",
+          "caption": "36694",
+          "createdAt": "2026-05-29T16:50:20.457Z",
+          "clientUploadId": "130-b25c73058c39d44f"
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T16:41:22.259Z"
+      "updatedAt": "2026-05-29T16:50:20.570Z"
     }
   ],
   "coordinateMap": {
