@@ -5,22 +5,43 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Missing OPENAI_API_KEY' });
-  const imageUrl = req.body && req.body.imageUrl;
-  if (!imageUrl) return res.status(400).json({ error: 'Missing imageUrl' });
+  const token = process.env.GITHUB_TOKEN;
+  const owner = process.env.GITHUB_OWNER || 'mikemm5216';
+  const repo = process.env.GITHUB_REPO || 'mogao-pwa';
+  const branch = process.env.GITHUB_BRANCH || 'main';
+  const path = process.env.CUSTOM_NOTES_PATH || 'data/custom-notes.json';
+  if (!token) return res.status(500).json({ error: 'Missing GITHUB_TOKEN' });
 
-  const prompt = '請辨識這張莫高窟手寫筆記圖片，整理成 JSON。只輸出 JSON，不要 Markdown。欄位：id（洞窟號，只保留數字）、title、subtitle、note（橘色重點短句）、desc（完整繁中筆記，整理壁面、主尊、經變、人物、供養人、歷史背景）、isSpecial。';
-  const result = await fetch('https://api.openai.com/v1/responses', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: process.env.OPENAI_OCR_MODEL || 'gpt-4.1-mini',
-      input: [{ role: 'user', content: [{ type: 'input_text', text: prompt }, { type: 'input_image', image_url: imageUrl }] }]
-    })
+  const incoming = req.body || {};
+  const payload = {
+    updatedAt: new Date().toISOString(),
+    notes: Array.isArray(incoming.notes) ? incoming.notes : [],
+    coordinateMap: incoming.coordinateMap || {}
+  };
+
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  let sha;
+  const current = await fetch(`${url}?ref=${encodeURIComponent(branch)}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+  });
+  if (current.ok) sha = (await current.json()).sha;
+
+  const body = {
+    message: `Sync Mogao custom notes ${payload.updatedAt}`,
+    branch,
+    content: Buffer.from(JSON.stringify(payload, null, 2), 'utf8').toString('base64')
+  };
+  if (sha) body.sha = sha;
+
+  const result = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
   });
   if (!result.ok) return res.status(result.status).json({ error: await result.text() });
-  const data = await result.json();
-  const text = data.output_text || (data.output || []).flatMap((item) => item.content || []).map((item) => item.text || '').join('\n');
-  return res.status(200).json({ text });
+  return res.status(200).json({ ok: true, updatedAt: payload.updatedAt });
 };
