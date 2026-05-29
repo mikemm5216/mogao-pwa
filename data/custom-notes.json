@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-29T15:39:44.993Z",
+  "updatedAt": "2026-05-29T15:41:12.743Z",
   "notes": [
     {
       "id": "130",
@@ -30,12 +30,19 @@
           "createdAt": "2026-05-29T15:39:44.410Z",
           "clientUploadId": "130-5bd424bb7c6154e7",
           "pendingUpload": false
+        },
+        {
+          "src": "images/caves/130/130-958a2992beeb680f.jpg",
+          "caption": "甬道南壁-都督夫人供養像",
+          "createdAt": "2026-05-29T15:41:12.062Z",
+          "clientUploadId": "130-958a2992beeb680f",
+          "pendingUpload": false
         }
       ],
       "x": 42.4,
       "y": 76,
       "source": "photo",
-      "updatedAt": "2026-05-29T15:39:44.532Z"
+      "updatedAt": "2026-05-29T15:41:12.331Z"
     }
   ],
   "coordinateMap": {
