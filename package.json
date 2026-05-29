@@ -1,0 +1,8 @@
+{
+  "name": "mogao-pwa",
+  "private": true,
+  "version": "7.0.0",
+  "dependencies": {
+    "@vercel/blob": "^0.27.0"
+  }
+}

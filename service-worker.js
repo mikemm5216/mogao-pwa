@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-v5-multi-photo-multi-caption-lock';
+const CACHE_NAME = 'mogao-pwa-v8-clean-header-blob';
 const ASSETS = [
   './',
   './index.html',
