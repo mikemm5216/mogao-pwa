@@ -5,12 +5,12 @@ const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './assets/tw3.css',
-  './assets/fonts.css',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-512.png',
-  './icons/icon-180.png'
+  './tw3.css',
+  './fonts.css',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
+  './icon-180.png'
 ];
 
 // 安裝：預先快取所有靜態資源
