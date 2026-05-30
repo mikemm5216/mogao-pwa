@@ -12,6 +12,8 @@
     'mogao.pendingPhotoUploads.v1'
   ];
 
+  let patchObserver = null;
+
   function parseJson(raw, fallback) {
     try { return raw ? JSON.parse(raw) : fallback; } catch (_) { return fallback; }
   }
@@ -27,6 +29,13 @@
 
   function normalizeCaveId(value) {
     return String(value || '').replace(/[^0-9]/g, '');
+  }
+
+  function hideOpenCaveModal() {
+    const modal = document.getElementById('note-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
   }
 
   function setStatus(message, type) {
@@ -154,6 +163,9 @@
   }
 
   async function uploadOneFile(file, caveId, caption) {
+    // Prevent the base page's broad modal observer from re-rendering while upload status changes.
+    hideOpenCaveModal();
+
     setStatus('正在壓縮照片，會壓到較小尺寸避免手機卡住…', 'warn');
     const compressed = await compressFileToSmallBlob(file);
     const hash = await sha256FromBlob(compressed.blob);
@@ -193,10 +205,8 @@
       mode: 'v15-fast-binary'
     };
 
-    // Critical freeze fix:
-    // Only save to localStorage here. Do NOT force-refresh the currently open cave modal.
-    // The base page already has a broad MutationObserver; writing image HTML here can create a DOM mutation loop on mobile.
     upsertImage(caveId, image);
+    hideOpenCaveModal();
     return image;
   }
 
@@ -209,6 +219,8 @@
     if (!caveId) throw new Error('請輸入洞窟號');
     if (!files.length) throw new Error('請選照片');
     if (!navigator.onLine) throw new Error('目前離線，照片先不要上傳；等有網路再試。');
+
+    hideOpenCaveModal();
 
     const chosen = files.slice(0, 1);
     if (files.length > 1) {
@@ -223,6 +235,7 @@
       PENDING_KEYS.forEach(function (key) { localStorage.removeItem(key); });
       localStorage.setItem('mogao.pendingPhotos.v14', '[]');
       setPendingText('');
+      hideOpenCaveModal();
       if (image) {
         setStatus('完成：照片已上傳。請關閉新增視窗，再點一次該洞窟查看照片。', 'ok');
       }
@@ -264,6 +277,11 @@
 
     clearPending();
     setStatus('V15 已啟用：一次 1 張，小圖快速上傳，成功才加入照片紀錄。', 'ok');
+
+    if (patchObserver) {
+      patchObserver.disconnect();
+      patchObserver = null;
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -271,6 +289,6 @@
     setTimeout(installPatch, 1500);
   });
 
-  const obs = new MutationObserver(function () { installPatch(); });
-  obs.observe(document.documentElement, { childList: true, subtree: true });
+  patchObserver = new MutationObserver(function () { installPatch(); });
+  patchObserver.observe(document.documentElement, { childList: true, subtree: true });
 })();
