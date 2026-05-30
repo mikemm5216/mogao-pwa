@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-v15-fast-upload-token-aware-copy-clean';
+const CACHE_NAME = 'mogao-pwa-v15-upload-freeze-fix';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.svg', './icon-512.svg', './data/custom-notes.json', './data/cave-coordinates.json', './v15-fast-upload.js'];
 
 const V15_PATCH_SCRIPT = `<script>
@@ -14,11 +14,11 @@ const V15_PATCH_SCRIPT = `<script>
     ];
     keys.forEach(function(k){ localStorage.removeItem(k); });
     localStorage.setItem('mogao.pendingPhotos.v14', '[]');
-    localStorage.setItem('mogao.v15.fastUploadCopyCleanedAt', new Date().toISOString());
+    localStorage.setItem('mogao.v15.uploadFreezeFixAt', new Date().toISOString());
   } catch(e) {}
   if (!document.querySelector('script[src="./v15-fast-upload.js"]')) {
     var s = document.createElement('script');
-    s.src = './v15-fast-upload.js?v=15-fast-upload-token-aware-copy-clean';
+    s.src = './v15-fast-upload.js?v=15-upload-freeze-fix';
     s.defer = true;
     document.head.appendChild(s);
   }
@@ -40,7 +40,7 @@ async function htmlWithPatchScript(request) {
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
   let html = await response.text();
-  if (!html.includes('mogao.v15.fastUploadCopyCleanedAt') && !html.includes('v15-fast-upload-token-aware-copy-clean')) {
+  if (!html.includes('mogao.v15.uploadFreezeFixAt') && !html.includes('15-upload-freeze-fix')) {
     html = html.replace('</body>', V15_PATCH_SCRIPT + '\n</body>');
   }
   return new Response(html, {
