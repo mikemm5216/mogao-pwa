@@ -1296,9 +1296,23 @@ if ('serviceWorker' in navigator) {
   if (window.__MOGAO_V11_BLOB_TOOL__) return;
   window.__MOGAO_V11_BLOB_TOOL__ = true;
 
-  const NOTES_KEY = 'mogao.customNotes.v11';
-  const PENDING_KEY = 'mogao.pendingPhotos.v11';
+  const NOTES_KEY = 'mogao.customNotes.v14';
+  const PENDING_KEY = 'mogao.pendingPhotos.v14';
   let isUploading = false;
+
+
+  function clearLegacyPendingQueuesOnce() {
+    const flag = 'mogao.v14.legacyPendingCleared';
+    if (localStorage.getItem(flag) === '1') return;
+    [
+      'mogao.pendingPhotos.v10',
+      'mogao.pendingPhotos.v11',
+      'mogao.pendingPhotos.v12',
+      'mogao.pendingPhotoUploads.v1'
+    ].forEach((key) => localStorage.removeItem(key));
+    localStorage.setItem(PENDING_KEY, JSON.stringify([]));
+    localStorage.setItem(flag, '1');
+  }
 
   function parseJson(raw, fallback) { try { return raw ? JSON.parse(raw) : fallback; } catch (_) { return fallback; } }
   function getNotes() { const notes = parseJson(localStorage.getItem(NOTES_KEY), []); return Array.isArray(notes) ? notes : []; }
@@ -1463,14 +1477,65 @@ if ('serviceWorker' in navigator) {
     };
   }
 
-  async function uploadTask(task) {
-    setStatus('正在壓縮待上傳照片，請稍候…', 'warn');
-    const fastTask = await normalizePendingTaskForFastUpload(task);
-    const res = await fetch('/api/upload-cave-image', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(fastTask) });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.image || !data.image.src) throw new Error(data.detail || data.error || '照片上傳失敗');
-    upsertImage(fastTask.caveId, data.image); return data.image;
+
+  async function loadVercelBlobClient() {
+    if (window.__vercelBlobClientUpload) return window.__vercelBlobClientUpload;
+    const mod = await import('https://esm.sh/@vercel/blob@0.27.0/client');
+    window.__vercelBlobClientUpload = mod.upload;
+    return mod.upload;
   }
+
+  function dataUrlToBlob(dataUrl) {
+    const [header, base64] = String(dataUrl || '').split(',');
+    const mimeMatch = String(header || '').match(/data:([^;]+);base64/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const binary = atob(base64 || '');
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type: mime });
+  }
+
+  function makeBlobPath(task) {
+    const id = normalizeCaveId(task.caveId);
+    const uploadId = String(task.clientUploadId || `${id}-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
+    const ext = String(task.fileExt || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    return `caves/${id}/${uploadId}.${ext}`;
+  }
+
+  async function uploadTask(task) {
+    setStatus('正在直接上傳到 Vercel Blob…', 'warn');
+
+    // 舊 queue 可能還有大圖，直傳前仍先重新壓縮。
+    const fastTask = await normalizePendingTaskForFastUpload(task);
+    const blob = dataUrlToBlob(fastTask.imageDataUrl);
+    const pathname = makeBlobPath(fastTask);
+    const upload = await loadVercelBlobClient();
+
+    const result = await upload(pathname, blob, {
+      access: 'public',
+      contentType: blob.type || 'image/jpeg',
+      handleUploadUrl: '/api/upload-cave-image',
+      clientPayload: JSON.stringify({
+        caveId: fastTask.caveId,
+        caption: fastTask.caption || '',
+        clientUploadId: fastTask.clientUploadId,
+        contentHash: fastTask.contentHash || '',
+        fileExt: fastTask.fileExt || 'jpg'
+      })
+    });
+
+    const image = {
+      src: result.url,
+      caption: fastTask.caption || '',
+      createdAt: new Date().toISOString(),
+      clientUploadId: fastTask.clientUploadId,
+      contentHash: fastTask.contentHash || ''
+    };
+
+    upsertImage(fastTask.caveId, image);
+    return image;
+  }
+
   async function flushPending() {
     if (!navigator.onLine || isUploading) return;
     const queue = getPending(); if (!queue.length) return;
@@ -1547,7 +1612,7 @@ if ('serviceWorker' in navigator) {
       }
       savePending(queue); if (fileInput) fileInput.value = '';
       if (!navigator.onLine) setStatus(`已列入待上傳 ${added} 張；略過重複 ${skipped} 張。恢復網路後會自動補傳。`, 'ok');
-      else { setStatus(`已完成壓縮並列入 ${added} 張，正在上傳到 Vercel Blob…`, 'warn'); await flushPending(); }
+      else { setStatus(`已完成壓縮並列入 ${added} 張，正在直接上傳到 Vercel Blob…`, 'warn'); await flushPending(); }
     } finally { setBusy(false); }
   }
 
@@ -1556,7 +1621,7 @@ if ('serviceWorker' in navigator) {
     const panel = document.createElement('div'); panel.id = 'mogao-v11-panel'; panel.className = 'mogao-v11-panel mogao-v11-hidden';
     panel.innerHTML = `
       <div class="mogao-v11-card">
-        <div class="flex items-center justify-between p-4 border-b border-stone-700"><div><div class="text-xl font-black text-orange-300">新增洞窟筆記</div><div class="text-xs text-stone-400">照片會自動快速壓縮後上傳到 Vercel Blob，成功後才會出現在照片牆。</div></div><button id="mogao-v11-close" class="text-3xl text-amber-200">×</button></div>
+        <div class="flex items-center justify-between p-4 border-b border-stone-700"><div><div class="text-xl font-black text-orange-300">新增洞窟筆記</div><div class="text-xs text-stone-400">照片會自動壓縮後直接上傳到 Vercel Blob，成功後才會出現在照片牆。</div></div><button id="mogao-v11-close" class="text-3xl text-amber-200">×</button></div>
         <div class="p-4 space-y-4">
           <label class="block text-sm text-stone-300">洞窟號</label><input id="mogao-v11-cave" class="mogao-v11-field" inputmode="numeric" placeholder="例如 130">
           <label class="block text-sm text-stone-300">文字筆記</label><textarea id="mogao-v11-text" class="mogao-v11-field" rows="4" placeholder="手動輸入筆記"></textarea><button id="mogao-v11-save-text" class="mogao-v11-btn bg-amber-500 text-stone-950 w-full">儲存文字筆記</button>
@@ -1573,7 +1638,7 @@ if ('serviceWorker' in navigator) {
   function installButton() { if (document.getElementById('mogao-v11-open')) return; const btn = document.createElement('button'); btn.id = 'mogao-v11-open'; btn.className = 'mogao-v11-float'; btn.textContent = '＋新增筆記'; btn.onclick = openPanel; document.body.appendChild(btn); }
   function observeModal() { const obs = new MutationObserver(() => { const id = getOpenCaveId(); if (id) renderNotesIntoModal(id); }); obs.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] }); }
 
-  document.addEventListener('DOMContentLoaded', () => { installButton(); buildPanel(); observeModal(); window.addEventListener('online', flushPending); setTimeout(flushPending, 1000); });
+  document.addEventListener('DOMContentLoaded', () => { clearLegacyPendingQueuesOnce(); installButton(); buildPanel(); observeModal(); window.addEventListener('online', flushPending); setTimeout(flushPending, 1000); });
 })();
 </script>
 
