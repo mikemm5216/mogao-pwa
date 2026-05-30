@@ -1,9 +1,0 @@
-{
-  "uses_client_upload_import": true,
-  "uses_direct_upload": true,
-  "clears_legacy_pending": true,
-  "dedupe_hash_still_present": true,
-  "api_uses_handleUpload": true,
-  "cache_v14": true,
-  "has_blob_dependency": true
-}
