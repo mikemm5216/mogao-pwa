@@ -1,0 +1,8 @@
+{
+  "has_auto_compress": true,
+  "uses_canvas_jpeg": true,
+  "queue_uses_compress": true,
+  "has_blob_api": true,
+  "cache_v12": true,
+  "index_size_gt_400kb": true
+}
