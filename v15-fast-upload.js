@@ -1,8 +1,9 @@
 (function () {
-  if (window.__MOGAO_V15_FAST_UPLOAD__) return;
-  window.__MOGAO_V15_FAST_UPLOAD__ = true;
+  if (window.__MOGAO_V18_FAST_UPLOAD__) return;
+  window.__MOGAO_V18_FAST_UPLOAD__ = true;
 
-  const NOTES_KEY = 'mogao.customNotes.v14';
+  const LEGACY_NOTES_KEY = 'mogao.customNotes.v14';
+  const BLOB_IMAGES_KEY = 'mogao.blobImages.v1';
   const PENDING_KEYS = [
     'mogao.pendingPhotos.v10',
     'mogao.pendingPhotos.v11',
@@ -12,30 +13,57 @@
     'mogao.pendingPhotoUploads.v1'
   ];
 
-  let patchObserver = null;
-
   function parseJson(raw, fallback) {
     try { return raw ? JSON.parse(raw) : fallback; } catch (_) { return fallback; }
-  }
-
-  function getNotes() {
-    const notes = parseJson(localStorage.getItem(NOTES_KEY), []);
-    return Array.isArray(notes) ? notes : [];
-  }
-
-  function saveNotes(notes) {
-    localStorage.setItem(NOTES_KEY, JSON.stringify(Array.isArray(notes) ? notes : []));
   }
 
   function normalizeCaveId(value) {
     return String(value || '').replace(/[^0-9]/g, '');
   }
 
-  function hideOpenCaveModal() {
-    const modal = document.getElementById('note-modal');
-    if (!modal) return;
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function clearPending() {
+    try {
+      PENDING_KEYS.forEach(function (key) { localStorage.removeItem(key); });
+      localStorage.setItem('mogao.pendingPhotos.v14', '[]');
+    } catch (_) {}
+  }
+
+  function sanitizeLegacyCustomNotes() {
+    try {
+      const raw = localStorage.getItem(LEGACY_NOTES_KEY);
+      if (!raw) return;
+      const notes = parseJson(raw, null);
+      if (!Array.isArray(notes)) {
+        localStorage.removeItem(LEGACY_NOTES_KEY);
+        return;
+      }
+      let changed = false;
+      const cleaned = notes.map(function (note) {
+        if (!note || typeof note !== 'object') return note;
+        if (!Array.isArray(note.images)) return note;
+        const before = note.images.length;
+        note.images = note.images.filter(function (img) {
+          const src = typeof img === 'string' ? img : (img && img.src);
+          if (!src || typeof src !== 'string') return false;
+          if (src.startsWith('data:')) return false;
+          if (src.length > 1000) return false;
+          return /^https?:\/\//.test(src);
+        }).slice(-12);
+        if (note.images.length !== before) changed = true;
+        return note;
+      });
+      const next = JSON.stringify(cleaned);
+      if (changed || raw.length > next.length + 1000) localStorage.setItem(LEGACY_NOTES_KEY, next);
+      localStorage.setItem('mogao.v18.legacyNotesSanitizedAt', new Date().toISOString());
+    } catch (_) {
+      try { localStorage.removeItem(LEGACY_NOTES_KEY); } catch (e) {}
+    }
   }
 
   function setStatus(message, type) {
@@ -66,6 +94,66 @@
     return String(raw || '').split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
   }
 
+  function getBlobImagesMap() {
+    const map = parseJson(localStorage.getItem(BLOB_IMAGES_KEY), {});
+    return map && typeof map === 'object' && !Array.isArray(map) ? map : {};
+  }
+
+  function saveBlobImage(caveId, image) {
+    const id = normalizeCaveId(caveId);
+    if (!id || !image || !image.src) return;
+    const map = getBlobImagesMap();
+    const list = Array.isArray(map[id]) ? map[id] : [];
+    const exists = list.some(function (x) {
+      return x && ((image.clientUploadId && x.clientUploadId === image.clientUploadId) || x.src === image.src);
+    });
+    if (!exists) list.push(image);
+    map[id] = list.filter(function (x) { return x && x.src && /^https?:\/\//.test(x.src); }).slice(-30);
+    localStorage.setItem(BLOB_IMAGES_KEY, JSON.stringify(map));
+  }
+
+  function getBlobImages(caveId) {
+    const map = getBlobImagesMap();
+    const id = normalizeCaveId(caveId);
+    return Array.isArray(map[id]) ? map[id] : [];
+  }
+
+  function renderBlobImages(caveId) {
+    const id = normalizeCaveId(caveId);
+    if (!id) return;
+    const modal = document.getElementById('note-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    const body = modal.querySelector('.overflow-y-auto');
+    if (!body) return;
+    const images = getBlobImages(id);
+    let box = document.getElementById('mogao-v18-blob-images');
+    if (!box) {
+      box = document.createElement('section');
+      box.id = 'mogao-v18-blob-images';
+      box.className = 'mt-4 space-y-3';
+      body.appendChild(box);
+    }
+    if (!images.length) {
+      box.innerHTML = '';
+      return;
+    }
+    box.innerHTML = images.map(function (img) {
+      return '<figure class="mogao-v11-photo-card"><img loading="lazy" src="' + escapeHtml(img.src) + '"><figcaption>' + escapeHtml(img.caption || '') + '</figcaption></figure>';
+    }).join('');
+  }
+
+  function patchOpenNoteOnce() {
+    if (window.__MOGAO_V18_OPENNOTE_PATCHED__) return;
+    if (typeof window.openNote !== 'function') return;
+    const originalOpenNote = window.openNote;
+    window.openNote = function (caveId) {
+      const result = originalOpenNote.apply(this, arguments);
+      setTimeout(function () { renderBlobImages(caveId); }, 80);
+      return result;
+    };
+    window.__MOGAO_V18_OPENNOTE_PATCHED__ = true;
+  }
+
   function readFileAsDataUrl(file) {
     return new Promise(function (resolve, reject) {
       const reader = new FileReader();
@@ -86,13 +174,9 @@
 
   function canvasToBlob(canvas, type, quality) {
     return new Promise(function (resolve, reject) {
-      if (canvas.toBlob) {
-        canvas.toBlob(function (blob) {
-          if (blob) resolve(blob); else reject(new Error('照片壓縮失敗'));
-        }, type, quality);
-        return;
-      }
-      reject(new Error('這台手機瀏覽器不支援照片壓縮'));
+      canvas.toBlob(function (blob) {
+        if (blob) resolve(blob); else reject(new Error('照片壓縮失敗'));
+      }, type, quality);
     });
   }
 
@@ -134,66 +218,36 @@
       sctx.drawImage(img, 0, 0, smaller.width, smaller.height);
       blob = await canvasToBlob(smaller, 'image/jpeg', 0.48);
     }
-
-    return { blob, originalBytes: file.size || 0, compressedBytes: blob.size };
-  }
-
-  function findNote(caveId) {
-    return getNotes().find(function (n) { return String(n.id) === String(caveId); });
-  }
-
-  function upsertImage(caveId, image) {
-    const id = normalizeCaveId(caveId);
-    if (!id || !image || !image.src) return;
-    const notes = getNotes();
-    let note = notes.find(function (n) { return String(n.id) === id; });
-    if (!note) {
-      note = { id, title: id + ' 窟 筆記', content: '', tags: ['自訂照片'], images: [], updatedAt: '' };
-      notes.push(note);
-    }
-    if (!Array.isArray(note.images)) note.images = [];
-    const uploadId = image.clientUploadId || '';
-    const src = image.src || '';
-    const exists = note.images.some(function (img) {
-      return typeof img === 'string' ? img === src : ((uploadId && img.clientUploadId === uploadId) || img.src === src);
-    });
-    if (!exists) note.images.push(image);
-    note.updatedAt = new Date().toISOString();
-    saveNotes(notes);
+    return blob;
   }
 
   async function uploadOneFile(file, caveId, caption) {
-    // Prevent the base page's broad modal observer from re-rendering while upload status changes.
-    hideOpenCaveModal();
-
-    setStatus('正在壓縮照片，會壓到較小尺寸避免手機卡住…', 'warn');
-    const compressed = await compressFileToSmallBlob(file);
-    const hash = await sha256FromBlob(compressed.blob);
+    setStatus('正在壓縮照片，請稍候…', 'warn');
+    const blob = await compressFileToSmallBlob(file);
+    const hash = await sha256FromBlob(blob);
     const clientUploadId = caveId + '-' + hash.slice(0, 24);
 
-    const existing = findNote(caveId)?.images?.some(function (img) { return img && img.clientUploadId === clientUploadId; });
+    const existing = getBlobImages(caveId).some(function (img) { return img && img.clientUploadId === clientUploadId; });
     if (existing) {
-      setStatus('這張照片已經存在，已略過，不會重複加入。', 'ok');
+      setStatus('這張照片已經存在，已略過。', 'ok');
       return null;
     }
 
-    setStatus('正在上傳 1 張照片…不要關閉頁面。', 'warn');
+    setStatus('正在上傳 1 張照片…', 'warn');
     const res = await fetch('/api/upload-cave-image-fast', {
       method: 'POST',
       headers: {
-        'Content-Type': compressed.blob.type || 'image/jpeg',
+        'Content-Type': blob.type || 'image/jpeg',
         'X-Cave-Id': caveId,
         'X-Caption': encodeURIComponent(caption || ''),
         'X-Client-Upload-Id': clientUploadId,
         'X-Content-Hash': hash
       },
-      body: compressed.blob
+      body: blob
     });
 
     const json = await res.json().catch(function () { return {}; });
-    if (!res.ok || !json.url) {
-      throw new Error(json.detail || json.error || '照片上傳失敗');
-    }
+    if (!res.ok || !json.url) throw new Error(json.detail || json.error || '照片上傳失敗');
 
     const image = {
       src: json.url,
@@ -201,12 +255,10 @@
       createdAt: new Date().toISOString(),
       clientUploadId,
       contentHash: hash,
-      bytes: json.bytes || compressed.blob.size,
-      mode: 'v15-fast-binary'
+      bytes: json.bytes || blob.size,
+      mode: 'v18-blob-images'
     };
-
-    upsertImage(caveId, image);
-    hideOpenCaveModal();
+    saveBlobImage(caveId, image);
     return image;
   }
 
@@ -220,48 +272,34 @@
     if (!files.length) throw new Error('請選照片');
     if (!navigator.onLine) throw new Error('目前離線，照片先不要上傳；等有網路再試。');
 
-    hideOpenCaveModal();
-
-    const chosen = files.slice(0, 1);
-    if (files.length > 1) {
-      setStatus('一次只上傳 1 張。這次先處理第一張，避免手機卡住。', 'warn');
-    }
-
+    const chosen = files[0];
     setBusy(true, '上傳 1 張中…請勿重複按');
     try {
-      const caption = captions[0] || chosen[0].name.replace(/\.[^.]+$/, '') || (caveId + ' 窟照片');
-      const image = await uploadOneFile(chosen[0], caveId, caption);
+      const caption = captions[0] || chosen.name.replace(/\.[^.]+$/, '') || (caveId + ' 窟照片');
+      const image = await uploadOneFile(chosen, caveId, caption);
       if (fileInput) fileInput.value = '';
-      PENDING_KEYS.forEach(function (key) { localStorage.removeItem(key); });
-      localStorage.setItem('mogao.pendingPhotos.v14', '[]');
+      clearPending();
       setPendingText('');
-      hideOpenCaveModal();
-      if (image) {
-        setStatus('完成：照片已上傳。請關閉新增視窗，再點一次該洞窟查看照片。', 'ok');
-      }
+      if (image) setStatus('完成：照片已上傳。請點該洞窟查看照片。', 'ok');
     } finally {
       setBusy(false);
     }
   }
 
-  function clearPending() {
-    PENDING_KEYS.forEach(function (key) { localStorage.removeItem(key); });
-    localStorage.setItem('mogao.pendingPhotos.v14', '[]');
-    setPendingText('已清除待上傳照片。');
-    setStatus('待上傳 queue 已清空。', 'ok');
-  }
-
   function installPatch() {
+    sanitizeLegacyCustomNotes();
+    clearPending();
+    patchOpenNoteOnce();
+
     const uploadBtn = document.getElementById('mogao-v11-upload');
     const fileInput = document.getElementById('mogao-v11-file');
-    if (!uploadBtn || uploadBtn.dataset.v15Fast === '1') return;
+    if (!uploadBtn) return;
 
-    uploadBtn.dataset.v15Fast = '1';
+    uploadBtn.dataset.v18Fast = '1';
     uploadBtn.textContent = '新增照片（一次 1 張）';
     uploadBtn.onclick = function () {
       uploadSinglePhoto().catch(function (err) { setStatus(err && err.message ? err.message : String(err), 'bad'); setBusy(false); });
     };
-
     if (fileInput) fileInput.multiple = false;
 
     const pending = document.getElementById('mogao-v11-pending');
@@ -271,24 +309,19 @@
       btn.type = 'button';
       btn.textContent = '清除待上傳';
       btn.className = 'mogao-v11-btn bg-stone-700 text-amber-100 w-full';
-      btn.onclick = clearPending;
+      btn.onclick = function () { clearPending(); setPendingText('已清除待上傳照片。'); setStatus('待上傳 queue 已清空。', 'ok'); };
       pending.parentNode.insertBefore(btn, pending.nextSibling);
     }
 
-    clearPending();
-    setStatus('V15 已啟用：一次 1 張，小圖快速上傳，成功才加入照片紀錄。', 'ok');
-
-    if (patchObserver) {
-      patchObserver.disconnect();
-      patchObserver = null;
+    if (!window.__MOGAO_V18_READY_SHOWN__) {
+      setStatus('V18 已啟用：照片改用輕量紀錄，不再寫入舊大型筆記資料。', 'ok');
+      window.__MOGAO_V18_READY_SHOWN__ = true;
     }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    installPatch();
     setTimeout(installPatch, 500);
     setTimeout(installPatch, 1500);
   });
-
-  patchObserver = new MutationObserver(function () { installPatch(); });
-  patchObserver.observe(document.documentElement, { childList: true, subtree: true });
 })();
