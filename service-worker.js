@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-v15-modal-close-upload-freeze-fix';
+const CACHE_NAME = 'mogao-pwa-v16-disable-legacy-modal-observer';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.svg', './icon-512.svg', './data/custom-notes.json', './data/cave-coordinates.json', './v15-fast-upload.js'];
 
 const V15_PATCH_SCRIPT = `<script>
@@ -14,11 +14,11 @@ const V15_PATCH_SCRIPT = `<script>
     ];
     keys.forEach(function(k){ localStorage.removeItem(k); });
     localStorage.setItem('mogao.pendingPhotos.v14', '[]');
-    localStorage.setItem('mogao.v15.modalCloseUploadFreezeFixAt', new Date().toISOString());
+    localStorage.setItem('mogao.v16.legacyObserverDisabledAt', new Date().toISOString());
   } catch(e) {}
   if (!document.querySelector('script[src="./v15-fast-upload.js"]')) {
     var s = document.createElement('script');
-    s.src = './v15-fast-upload.js?v=15-modal-close-upload-freeze-fix';
+    s.src = './v15-fast-upload.js?v=16-disable-legacy-modal-observer';
     s.defer = true;
     document.head.appendChild(s);
   }
@@ -35,12 +35,21 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+function disableLegacyObserverAndAutoflush(html) {
+  return html
+    .replace('buildPanel(); observeModal(); window.addEventListener(\'online\', flushPending); setTimeout(flushPending, 1000);', 'buildPanel(); /* v16: legacy observeModal disabled to prevent DOM mutation loop */ /* online autoflush disabled */')
+    .replace('buildPanel(); observeModal(); window.addEventListener("online", flushPending); setTimeout(flushPending, 1000);', 'buildPanel(); /* v16: legacy observeModal disabled to prevent DOM mutation loop */ /* online autoflush disabled */')
+    .replace('buildPanel(); observeModal(); window.addEventListener(`online`, flushPending); setTimeout(flushPending, 1000);', 'buildPanel(); /* v16: legacy observeModal disabled to prevent DOM mutation loop */ /* online autoflush disabled */')
+    .replace('if (current) renderNotesIntoModal(current);', '/* v16: skip immediate modal rerender after upload to prevent freeze */');
+}
+
 async function htmlWithPatchScript(request) {
   const response = await fetch(request, { cache: 'no-store' });
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
   let html = await response.text();
-  if (!html.includes('mogao.v15.modalCloseUploadFreezeFixAt') && !html.includes('15-modal-close-upload-freeze-fix')) {
+  html = disableLegacyObserverAndAutoflush(html);
+  if (!html.includes('mogao.v16.legacyObserverDisabledAt') && !html.includes('16-disable-legacy-modal-observer')) {
     html = html.replace('</body>', V15_PATCH_SCRIPT + '\n</body>');
   }
   return new Response(html, {
