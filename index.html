@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>莫高窟互動筆記 V18 Clean</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#0c0a09" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    :root { --bg:#0c0a09; --panel:#1c1917; --line:#f97316; --text:#fafaf9; --muted:#a8a29e; --ok:#86efac; --warn:#fde68a; --bad:#fca5a5; }
+    * { box-sizing:border-box; }
+    html, body { margin:0; width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Serif TC", "Microsoft JhengHei", serif; }
+    button, input, textarea { font:inherit; }
+    button { touch-action: manipulation; }
+    header { height:54px; display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(28,25,23,.96); border-bottom:1px solid #44403c; z-index:10; position:relative; }
+    header h1 { margin:0; font-size:18px; color:#f59e0b; font-weight:900; letter-spacing:.06em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .header-actions { margin-left:auto; display:flex; gap:8px; }
+    .small-btn { border:1px solid #78716c; color:#fde68a; background:#292524; border-radius:999px; padding:8px 12px; font-weight:800; }
+    #viewer { position:absolute; inset:54px 0 0 0; overflow:hidden; background:#0c0a09; cursor:grab; }
+    #stage { position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform; }
+    #mapWrap { position:relative; display:inline-block; min-width:960px; min-height:480px; background:#1c1917; border:1px solid #44403c; }
+    #mapImage { display:block; max-width:none; width:1600px; height:auto; user-select:none; -webkit-user-drag:none; pointer-events:none; }
+    #mapFallback { position:absolute; inset:0; display:none; align-items:center; justify-content:center; text-align:center; color:#fcd34d; padding:30px; background:linear-gradient(135deg,#1c1917,#292524); }
+    .hotspot { position:absolute; transform:translate(-50%,-50%); min-width:28px; height:24px; padding:2px 5px; border-radius:5px; border:2px solid rgba(255,255,255,.9); background:rgba(249,115,22,.82); color:#1c1917; font-size:12px; font-weight:900; line-height:18px; text-align:center; box-shadow:0 0 0 3px rgba(249,115,22,.25), 0 6px 16px rgba(0,0,0,.45); z-index:4; }
+    .hotspot:active { transform:translate(-50%,-50%) scale(.92); }
+    #noteModal, #editPanel { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.68); padding:12px; }
+    .card { width:min(760px,96vw); max-height:90vh; overflow:auto; background:#1c1917; border:2px solid #f97316; border-radius:22px; box-shadow:0 24px 80px rgba(0,0,0,.6); }
+    .card-head { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid #57534e; position:sticky; top:0; background:#1c1917; z-index:2; }
+    .card-title { font-size:20px; font-weight:900; color:#fdba74; margin:0; }
+    .xbtn { margin-left:auto; border:0; background:transparent; color:#fde68a; font-size:28px; line-height:1; padding:4px 8px; }
+    .card-body { padding:16px; display:flex; flex-direction:column; gap:14px; }
+    .field { width:100%; background:#0c0a09; color:#fafaf9; border:1px solid #57534e; border-radius:13px; padding:12px; font-size:16px; }
+    .btn { width:100%; border:0; border-radius:14px; padding:13px 16px; font-weight:900; background:#f97316; color:#1c1917; }
+    .btn.secondary { background:#44403c; color:#fde68a; }
+    .btn.amber { background:#f59e0b; color:#1c1917; }
+    .muted { color:#a8a29e; font-size:13px; }
+    .status { color:#fde68a; min-height:22px; font-size:14px; white-space:pre-wrap; }
+    .noteBox { background:#fafaf9; color:#292524; border-radius:14px; padding:12px; white-space:pre-wrap; }
+    .photoGrid { display:grid; grid-template-columns:1fr; gap:12px; }
+    .photoCard { background:#fafaf9; color:#292524; border-radius:14px; overflow:hidden; border:1px solid rgba(120,113,108,.35); }
+    .photoCard img { display:block; width:100%; height:auto; background:#f5f5f4; }
+    .photoCard figcaption { padding:10px 12px; font-size:14px; }
+    #floatAdd { position:fixed; right:16px; bottom:16px; z-index:20; width:auto; border-radius:999px; padding:15px 19px; box-shadow:0 18px 40px rgba(0,0,0,.5); }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width:640px) {
+      header { height:50px; }
+      #viewer { inset:50px 0 0 0; }
+      .row { grid-template-columns:1fr; }
+      #mapImage { width:1400px; }
+      .card { max-height:92vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span aria-hidden="true">🕌</span>
+    <h1>莫高窟崖面互動筆記 V18 Clean</h1>
+    <div class="header-actions">
+      <button id="zoomOut" class="small-btn">－</button>
+      <button id="zoomIn" class="small-btn">＋</button>
+      <button id="resetView" class="small-btn">重設</button>
+    </div>
+  </header>
+
+  <main id="viewer">
+    <div id="stage">
+      <div id="mapWrap">
+        <img id="mapImage" src="./assets/mogao-map.jpg" alt="莫高窟崖面全景圖">
+        <div id="mapFallback">
+          <div>
+            <h2>請放入地圖檔</h2>
+            <p>把你的全景底圖放到 <b>assets/mogao-map.jpg</b>，或修改 index.html 裡的 mapImage src。</p>
+          </div>
+        </div>
+        <div id="hotspotLayer"></div>
+      </div>
+    </div>
+  </main>
+
+  <button id="floatAdd" class="btn">＋新增筆記</button>
+
+  <section id="noteModal">
+    <div class="card">
+      <div class="card-head">
+        <h2 id="modalTitle" class="card-title">洞窟筆記</h2>
+        <button id="closeModal" class="xbtn">×</button>
+      </div>
+      <div class="card-body">
+        <div id="staticInfo" class="muted"></div>
+        <div>
+          <div class="muted">文字筆記</div>
+          <div id="textNoteView" class="noteBox">尚無自訂文字筆記。</div>
+        </div>
+        <div>
+          <div class="muted">照片</div>
+          <div id="photoList" class="photoGrid"></div>
+        </div>
+        <div class="row">
+          <button id="editThisCave" class="btn amber">編輯這個洞窟</button>
+          <button id="closeModal2" class="btn secondary">關閉</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="editPanel">
+    <div class="card">
+      <div class="card-head">
+        <h2 class="card-title">新增洞窟筆記</h2>
+        <button id="closeEdit" class="xbtn">×</button>
+      </div>
+      <div class="card-body">
+        <label class="muted">洞窟號</label>
+        <input id="caveInput" class="field" inputmode="numeric" placeholder="例如 130">
+        <label class="muted">文字筆記</label>
+        <textarea id="textInput" class="field" rows="5" placeholder="手動輸入筆記"></textarea>
+        <button id="saveTextBtn" class="btn amber">儲存文字筆記</button>
+        <div style="border-top:1px solid #57534e"></div>
+        <label class="muted">照片備註</label>
+        <textarea id="captionInput" class="field" rows="3" placeholder="例如：南大像佛頭"></textarea>
+        <input id="fileInput" class="field" type="file" accept="image/*">
+        <button id="uploadBtn" class="btn">新增照片（一次 1 張）</button>
+        <button id="clearBadDataBtn" class="btn secondary">清除舊上傳暫存 / base64 污染</button>
+        <p id="editStatus" class="status"></p>
+      </div>
+    </div>
+  </section>
+<script>
+
+(function(){
+  'use strict';
+
+  const TEXT_KEY = 'mogao.textNotes.v1';
+  const BLOB_IMAGES_KEY = 'mogao.blobImages.v1';
+  const LEGACY_KEYS = [
+    'mogao.pendingPhotos.v10','mogao.pendingPhotos.v11','mogao.pendingPhotos.v12','mogao.pendingPhotos.v13','mogao.pendingPhotos.v14','mogao.pendingPhotoUploads.v1'
+  ];
+  const LEGACY_NOTES_KEY = 'mogao.customNotes.v14';
+
+  const fallbackCaves = [
+    {id:'17', x:8, y:44, title:'17 窟'}, {id:'45', x:15, y:46, title:'45 窟'},
+    {id:'57', x:19, y:47, title:'57 窟'}, {id:'61', x:23, y:46, title:'61 窟'},
+    {id:'96', x:32, y:43, title:'96 窟'}, {id:'112', x:38, y:46, title:'112 窟'},
+    {id:'130', x:44, y:45, title:'130 窟'}, {id:'131', x:46, y:43, title:'131 窟'},
+    {id:'148', x:51, y:46, title:'148 窟'}, {id:'156', x:55, y:46, title:'156 窟'},
+    {id:'158', x:58, y:46, title:'158 窟'}, {id:'159', x:61, y:46, title:'159 窟'},
+    {id:'194', x:66, y:47, title:'194 窟'}, {id:'205', x:69, y:47, title:'205 窟'},
+    {id:'220', x:73, y:46, title:'220 窟'}, {id:'237', x:77, y:47, title:'237 窟'},
+    {id:'249', x:81, y:46, title:'249 窟'}, {id:'254', x:84, y:47, title:'254 窟'},
+    {id:'257', x:87, y:46, title:'257 窟'}, {id:'285', x:91, y:45, title:'285 窟'}
+  ];
+
+  let caves = fallbackCaves;
+  let currentCaveId = '';
+  let scale = 1, panX = 0, panY = 0;
+  let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0, moved = false;
+
+  const $ = (id) => document.getElementById(id);
+  const viewer = $('viewer'), stage = $('stage'), mapImage = $('mapImage'), hotspotLayer = $('hotspotLayer');
+
+  function parseJson(raw, fallback){ try { return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } }
+  function norm(value){ return String(value || '').replace(/[^0-9]/g, ''); }
+  function esc(value){ return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+  function setStatus(msg, type='warn'){
+    const el = $('editStatus');
+    el.textContent = msg || '';
+    el.style.color = type === 'bad' ? 'var(--bad)' : type === 'ok' ? 'var(--ok)' : 'var(--warn)';
+  }
+
+  function getTextMap(){ return parseJson(localStorage.getItem(TEXT_KEY), {}); }
+  function saveTextMap(map){ localStorage.setItem(TEXT_KEY, JSON.stringify(map && typeof map === 'object' ? map : {})); }
+  function getImageMap(){ const m = parseJson(localStorage.getItem(BLOB_IMAGES_KEY), {}); return m && typeof m === 'object' && !Array.isArray(m) ? m : {}; }
+  function saveImageMap(map){ localStorage.setItem(BLOB_IMAGES_KEY, JSON.stringify(map && typeof map === 'object' ? map : {})); }
+
+  function clearOldPollution(){
+    LEGACY_KEYS.forEach(k => localStorage.removeItem(k));
+    localStorage.setItem('mogao.pendingPhotos.v14', '[]');
+    try {
+      const raw = localStorage.getItem(LEGACY_NOTES_KEY);
+      const arr = parseJson(raw, null);
+      if (Array.isArray(arr)) {
+        arr.forEach(n => {
+          if (n && Array.isArray(n.images)) {
+            n.images = n.images.filter(img => {
+              const src = typeof img === 'string' ? img : (img && img.src);
+              return typeof src === 'string' && /^https?:\/\//.test(src) && src.length < 1000;
+            }).slice(-10);
+          }
+        });
+        localStorage.setItem(LEGACY_NOTES_KEY, JSON.stringify(arr));
+      }
+    } catch { localStorage.removeItem(LEGACY_NOTES_KEY); }
+    setStatus('已清除舊上傳暫存與 base64 污染。', 'ok');
+  }
+
+  function applyTransform(){ stage.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
+  function resetView(){
+    scale = Math.min(window.innerWidth / 1400, 1);
+    if (!isFinite(scale) || scale <= .2) scale = .6;
+    panX = 20; panY = 30; applyTransform();
+  }
+
+  function openEdit(caveId=''){
+    $('editPanel').style.display = 'flex';
+    if (caveId) {
+      $('caveInput').value = caveId;
+      const texts = getTextMap();
+      $('textInput').value = texts[norm(caveId)] || '';
+    }
+    setStatus(navigator.onLine ? '目前聯網：照片會直接上傳到 Vercel Blob。' : '目前離線：請先不要上傳照片。', navigator.onLine ? 'ok' : 'warn');
+  }
+  function closeEdit(){ $('editPanel').style.display = 'none'; }
+
+  function openCave(caveId){
+    const id = norm(caveId);
+    currentCaveId = id;
+    const cave = caves.find(c => String(c.id) === id) || {id, title:id + ' 窟'};
+    $('modalTitle').textContent = (cave.title || (id + ' 窟')) + ' 筆記';
+    $('staticInfo').textContent = cave.desc || cave.subtitle || '自訂洞窟資料可放在 data/cave-coordinates.json。';
+    const text = getTextMap()[id] || '';
+    $('textNoteView').textContent = text || '尚無自訂文字筆記。';
+    const images = getImageMap()[id] || [];
+    $('photoList').innerHTML = images.length ? images.map(img => (
+      `<figure class="photoCard"><img loading="lazy" src="${esc(img.src)}" alt=""><figcaption>${esc(img.caption || '')}</figcaption></figure>`
+    )).join('') : '<p class="muted">尚無照片。</p>';
+    $('noteModal').style.display = 'flex';
+  }
+  function closeModal(){ $('noteModal').style.display = 'none'; }
+
+  function renderHotspots(){
+    hotspotLayer.innerHTML = '';
+    caves.forEach(c => {
+      const id = norm(c.id);
+      const x = Number(c.x ?? c.left ?? c.percentX);
+      const y = Number(c.y ?? c.top ?? c.percentY);
+      if (!id || !isFinite(x) || !isFinite(y)) return;
+      const btn = document.createElement('button');
+      btn.className = 'hotspot';
+      btn.type = 'button';
+      btn.textContent = id;
+      btn.style.left = x + '%';
+      btn.style.top = y + '%';
+      btn.addEventListener('click', (ev) => { ev.stopPropagation(); if (!moved) openCave(id); });
+      hotspotLayer.appendChild(btn);
+    });
+  }
+
+  async function loadCaves(){
+    try {
+      const res = await fetch('./data/cave-coordinates.json?ts=' + Date.now(), {cache:'no-store'});
+      if (!res.ok) throw new Error(String(res.status));
+      const json = await res.json();
+      const arr = Array.isArray(json) ? json : (Array.isArray(json.caves) ? json.caves : []);
+      if (arr.length) caves = arr;
+    } catch {}
+    renderHotspots();
+  }
+
+  function readFileAsDataUrl(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(reader.error || new Error('讀取照片失敗'));
+      reader.readAsDataURL(file);
+    });
+  }
+  function loadImageFromDataUrl(dataUrl){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('照片載入失敗'));
+      img.src = dataUrl;
+    });
+  }
+  function canvasToBlob(canvas, type, quality){
+    return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('照片壓縮失敗')), type, quality));
+  }
+  async function compressFileToBlob(file){
+    const dataUrl = await readFileAsDataUrl(file);
+    const img = await loadImageFromDataUrl(dataUrl);
+    const maxSize = 720, ow = img.naturalWidth || img.width, oh = img.naturalHeight || img.height;
+    const s = Math.min(1, maxSize / Math.max(ow, oh));
+    const w = Math.max(1, Math.round(ow * s)), h = Math.max(1, Math.round(oh * s));
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d', {alpha:false});
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
+    let blob = await canvasToBlob(canvas, 'image/jpeg', .55);
+    if (blob.size > 700 * 1024) blob = await canvasToBlob(canvas, 'image/jpeg', .42);
+    return blob;
+  }
+  async function sha256(blob){
+    const buf = await blob.arrayBuffer();
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function uploadPhoto(){
+    const caveId = norm($('caveInput').value);
+    const file = $('fileInput').files && $('fileInput').files[0];
+    const caption = $('captionInput').value.trim();
+    if (!caveId) throw new Error('請輸入洞窟號');
+    if (!file) throw new Error('請選照片');
+    if (!navigator.onLine) throw new Error('目前離線，照片先不要上傳。');
+    $('uploadBtn').disabled = true;
+    setStatus('正在壓縮照片…');
+    try {
+      const blob = await compressFileToBlob(file);
+      const hash = await sha256(blob);
+      const clientUploadId = caveId + '-' + hash.slice(0,24);
+      const map = getImageMap();
+      const list = Array.isArray(map[caveId]) ? map[caveId] : [];
+      if (list.some(img => img.clientUploadId === clientUploadId)) {
+        setStatus('這張照片已存在，已略過。', 'ok'); return;
+      }
+      setStatus('正在上傳到 Vercel Blob…');
+      const res = await fetch('/api/upload-cave-image-fast', {
+        method:'POST',
+        headers:{
+          'Content-Type': blob.type || 'image/jpeg',
+          'X-Cave-Id': caveId,
+          'X-Caption': encodeURIComponent(caption),
+          'X-Client-Upload-Id': clientUploadId,
+          'X-Content-Hash': hash
+        },
+        body: blob
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.url) throw new Error(json.detail || json.error || '照片上傳失敗');
+      list.push({src:json.url, caption, clientUploadId, contentHash:hash, createdAt:new Date().toISOString(), bytes:json.bytes || blob.size});
+      map[caveId] = list.slice(-30);
+      saveImageMap(map);
+      $('fileInput').value = '';
+      setStatus('完成：照片已上傳。', 'ok');
+    } finally { $('uploadBtn').disabled = false; }
+  }
+
+  function saveText(){
+    const caveId = norm($('caveInput').value);
+    if (!caveId) { setStatus('請輸入洞窟號', 'bad'); return; }
+    const map = getTextMap(); map[caveId] = $('textInput').value || ''; saveTextMap(map);
+    setStatus('文字筆記已儲存。', 'ok');
+  }
+
+  function bind(){
+    $('zoomIn').onclick = () => { scale = Math.min(4, scale * 1.15); applyTransform(); };
+    $('zoomOut').onclick = () => { scale = Math.max(.2, scale / 1.15); applyTransform(); };
+    $('resetView').onclick = resetView;
+    $('floatAdd').onclick = () => openEdit('');
+    $('closeEdit').onclick = closeEdit;
+    $('closeModal').onclick = closeModal;
+    $('closeModal2').onclick = closeModal;
+    $('editThisCave').onclick = () => { closeModal(); openEdit(currentCaveId); };
+    $('saveTextBtn').onclick = saveText;
+    $('clearBadDataBtn').onclick = clearOldPollution;
+    $('uploadBtn').onclick = () => uploadPhoto().catch(err => setStatus(err.message || String(err), 'bad'));
+    viewer.addEventListener('pointerdown', ev => { dragging = true; moved = false; startX = ev.clientX; startY = ev.clientY; baseX = panX; baseY = panY; viewer.setPointerCapture(ev.pointerId); });
+    viewer.addEventListener('pointermove', ev => { if (!dragging) return; const dx = ev.clientX-startX, dy = ev.clientY-startY; if (Math.abs(dx)+Math.abs(dy)>5) moved = true; panX=baseX+dx; panY=baseY+dy; applyTransform(); });
+    viewer.addEventListener('pointerup', ev => { dragging = false; try { viewer.releasePointerCapture(ev.pointerId); } catch {} });
+    viewer.addEventListener('wheel', ev => { ev.preventDefault(); scale = Math.max(.2, Math.min(4, scale * (ev.deltaY < 0 ? 1.08 : .92))); applyTransform(); }, {passive:false});
+    mapImage.onerror = () => { $('mapFallback').style.display = 'flex'; };
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    bind(); resetView(); await loadCaves(); clearOldPollution();
+    if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('./service-worker.js'); } catch {} }
+  });
+})();
+</script>
+</body>
+</html>
