@@ -1,1 +1,7 @@
-
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="650" viewBox="0 0 1600 650">
+<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#1c1917"/><stop offset=".5" stop-color="#7c2d12"/><stop offset="1" stop-color="#292524"/></linearGradient></defs>
+<rect width="1600" height="650" fill="url(#g)"/>
+<path d="M0 390 C180 300 280 350 450 280 C620 210 720 300 900 250 C1120 190 1260 330 1600 230 L1600 650 L0 650 Z" fill="#78350f" opacity=".85"/>
+<text x="800" y="230" fill="#fde68a" font-size="46" text-anchor="middle" font-family="serif">請替換 assets/mogao-map.jpg 為正式莫高窟長圖</text>
+<text x="800" y="300" fill="#fdba74" font-size="26" text-anchor="middle" font-family="sans-serif">Clean V18 template - no legacy upload, no observer, no base64 localStorage photos</text>
+</svg>
