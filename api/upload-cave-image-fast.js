@@ -32,11 +32,19 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) {
+    return res.status(500).json({
+      error: 'Vercel Blob 尚未設定',
+      detail: '缺少 BLOB_READ_WRITE_TOKEN。請到 Vercel Project Settings → Environment Variables 新增 BLOB_READ_WRITE_TOKEN，或在 Vercel Storage 連接 Blob store 後重新部署。'
+    });
+  }
+
   try {
     const caveId = String(req.headers['x-cave-id'] || '').replace(/[^0-9]/g, '');
     const clientUploadId = String(req.headers['x-client-upload-id'] || '').replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
     const contentHash = String(req.headers['x-content-hash'] || '').replace(/[^a-fA-F0-9]/g, '').slice(0, 64);
-    const caption = String(req.headers['x-caption'] || '').slice(0, 500);
+    const caption = decodeURIComponent(String(req.headers['x-caption'] || '')).slice(0, 500);
     const contentType = String(req.headers['content-type'] || 'image/jpeg').split(';')[0].trim() || 'image/jpeg';
 
     if (!caveId) return res.status(400).json({ error: 'Missing caveId' });
@@ -54,7 +62,8 @@ module.exports = async function handler(req, res) {
     const blob = await put(pathname, body, {
       access: 'public',
       contentType,
-      addRandomSuffix: false
+      addRandomSuffix: false,
+      token
     });
 
     return res.status(200).json({
@@ -69,7 +78,7 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     return res.status(400).json({
-      error: 'Fast cave image upload failed',
+      error: '照片上傳失敗',
       detail: error && error.message ? error.message : String(error)
     });
   }
