@@ -1,7 +1,7 @@
-const CACHE_NAME = 'mogao-pwa-v14-2-force-clear-pending-retest';
-const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.svg', './icon-512.svg', './data/custom-notes.json', './data/cave-coordinates.json'];
+const CACHE_NAME = 'mogao-pwa-v15-fast-upload-elder-mode';
+const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.svg', './icon-512.svg', './data/custom-notes.json', './data/cave-coordinates.json', './v15-fast-upload.js'];
 
-const CLEAR_PENDING_SCRIPT = `<script>
+const V15_PATCH_SCRIPT = `<script>
 (function(){
   try {
     var keys = [
@@ -14,8 +14,14 @@ const CLEAR_PENDING_SCRIPT = `<script>
     ];
     keys.forEach(function(k){ localStorage.removeItem(k); });
     localStorage.setItem('mogao.pendingPhotos.v14', '[]');
-    localStorage.setItem('mogao.v14.forceClearedAt', new Date().toISOString());
+    localStorage.setItem('mogao.v15.fastUploadPatchedAt', new Date().toISOString());
   } catch(e) {}
+  if (!document.querySelector('script[src="./v15-fast-upload.js"]')) {
+    var s = document.createElement('script');
+    s.src = './v15-fast-upload.js?v=15-fast-upload-elder-mode';
+    s.defer = true;
+    document.head.appendChild(s);
+  }
 })();
 </script>`;
 
@@ -29,13 +35,13 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-async function htmlWithClearScript(request) {
+async function htmlWithPatchScript(request) {
   const response = await fetch(request, { cache: 'no-store' });
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
   let html = await response.text();
-  if (!html.includes('mogao.v14.forceClearedAt')) {
-    html = html.replace('</body>', CLEAR_PENDING_SCRIPT + '\n</body>');
+  if (!html.includes('mogao.v15.fastUploadPatchedAt') && !html.includes('v15-fast-upload.js')) {
+    html = html.replace('</body>', V15_PATCH_SCRIPT + '\n</body>');
   }
   return new Response(html, {
     status: response.status,
@@ -49,7 +55,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   const isHtml = event.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('/index.html');
   if (isHtml) {
-    event.respondWith(htmlWithClearScript(event.request).catch(() => caches.match('./index.html')));
+    event.respondWith(htmlWithPatchScript(event.request).catch(() => caches.match('./index.html')));
     return;
   }
   event.respondWith(fetch(event.request).then((response) => {
