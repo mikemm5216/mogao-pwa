@@ -56,7 +56,7 @@
       }
     });
     const btn = document.getElementById('mogao-v11-upload');
-    if (btn) btn.textContent = busy ? (text || '上傳中，請不要重複按') : '新增照片（老人模式：一次 1 張）';
+    if (btn) btn.textContent = busy ? (text || '上傳中，請不要重複按') : '新增照片（一次 1 張）';
   }
 
   function getCaptionLines(raw) {
@@ -159,13 +159,6 @@
     saveNotes(notes);
   }
 
-  function getOpenCaveId() {
-    const title = document.getElementById('modal-cave-title');
-    const text = title ? title.textContent : '';
-    const match = String(text).match(/(\d+)/);
-    return match ? match[1] : '';
-  }
-
   function renderNotesIntoModal(caveId) {
     const id = normalizeCaveId(caveId);
     if (!id) return;
@@ -193,7 +186,7 @@
   }
 
   async function uploadOneFile(file, caveId, caption) {
-    setStatus('正在壓縮照片：老人模式會壓到較小尺寸，避免卡住…', 'warn');
+    setStatus('正在壓縮照片，會壓到較小尺寸避免手機卡住…', 'warn');
     const compressed = await compressFileToSmallBlob(file);
     const hash = await sha256FromBlob(compressed.blob);
     const clientUploadId = caveId + '-' + hash.slice(0, 24);
@@ -236,7 +229,7 @@
     return image;
   }
 
-  async function elderModeUpload() {
+  async function uploadSinglePhoto() {
     const caveId = normalizeCaveId(document.getElementById('mogao-v11-cave')?.value);
     const fileInput = document.getElementById('mogao-v11-file');
     const files = Array.from(fileInput?.files || []);
@@ -248,7 +241,7 @@
 
     const chosen = files.slice(0, 1);
     if (files.length > 1) {
-      setStatus('老人模式一次只上傳 1 張。這次先處理第一張，避免手機卡死。', 'warn');
+      setStatus('一次只上傳 1 張。這次先處理第一張，避免手機卡住。', 'warn');
     }
 
     setBusy(true, '上傳 1 張中…請勿重複按');
@@ -278,9 +271,9 @@
     if (!uploadBtn || uploadBtn.dataset.v15Fast === '1') return;
 
     uploadBtn.dataset.v15Fast = '1';
-    uploadBtn.textContent = '新增照片（老人模式：一次 1 張）';
+    uploadBtn.textContent = '新增照片（一次 1 張）';
     uploadBtn.onclick = function () {
-      elderModeUpload().catch(function (err) { setStatus(err && err.message ? err.message : String(err), 'bad'); setBusy(false); });
+      uploadSinglePhoto().catch(function (err) { setStatus(err && err.message ? err.message : String(err), 'bad'); setBusy(false); });
     };
 
     if (fileInput) fileInput.multiple = false;
@@ -297,7 +290,7 @@
     }
 
     clearPending();
-    setStatus('V15 老人模式已啟用：一次 1 張，小圖快速上傳，成功才加入照片牆。', 'ok');
+    setStatus('V15 已啟用：一次 1 張，小圖快速上傳，成功才加入照片牆。', 'ok');
   }
 
   document.addEventListener('DOMContentLoaded', function () {
