@@ -1332,7 +1332,7 @@ if ('serviceWorker' in navigator) {
     });
   }
 
-  async function compressImageFile(file, maxSize = 1600, quality = 0.82) {
+  async function compressImageFile(file, maxSize = 1000, quality = 0.68) {
     const originalDataUrl = await readFileAsDataUrl(file);
     const img = await loadImageFromDataUrl(originalDataUrl);
     const originalWidth = img.naturalWidth || img.width;
@@ -1414,17 +1414,77 @@ if ('serviceWorker' in navigator) {
   function setStatus(message, type) { const el = document.getElementById('mogao-v11-status'); if (!el) return; el.textContent = message || ''; el.style.color = type === 'bad' ? '#fca5a5' : type === 'ok' ? '#86efac' : '#fde68a'; }
   function refreshPendingCount() { const el = document.getElementById('mogao-v11-pending'); if (!el) return; const count = getPending().length; el.textContent = count ? `尚有 ${count} 張照片等待上傳；有網路時會自動補傳。` : ''; }
 
+
+  async function compressDataUrlForUpload(dataUrl, maxSize = 1000, quality = 0.68) {
+    if (!String(dataUrl || '').startsWith('data:image/')) {
+      return { dataUrl, ext: 'jpg', compressed: false };
+    }
+    const img = await loadImageFromDataUrl(dataUrl);
+    const originalWidth = img.naturalWidth || img.width;
+    const originalHeight = img.naturalHeight || img.height;
+    if (!originalWidth || !originalHeight) {
+      return { dataUrl, ext: 'jpg', compressed: false };
+    }
+
+    const scale = Math.min(1, maxSize / Math.max(originalWidth, originalHeight));
+    const width = Math.max(1, Math.round(originalWidth * scale));
+    const height = Math.max(1, Math.round(originalHeight * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    const jpegDataUrl = canvas.toDataURL('image/jpeg', quality);
+    const before = Math.round(String(dataUrl).length * 0.75);
+    const after = Math.round(jpegDataUrl.length * 0.75);
+    return { dataUrl: jpegDataUrl, ext: 'jpg', originalBytes: before, compressedBytes: after, compressed: after < before, width, height };
+  }
+
+  async function normalizePendingTaskForFastUpload(task) {
+    if (!task || !task.imageDataUrl) return task;
+    let compressed = await compressDataUrlForUpload(task.imageDataUrl, 1000, 0.68);
+    if (String(compressed.dataUrl || '').length > 1200 * 1024) {
+      compressed = await compressDataUrlForUpload(compressed.dataUrl, 800, 0.58);
+    }
+    const hash = await sha256(compressed.dataUrl);
+    return {
+      ...task,
+      imageDataUrl: compressed.dataUrl,
+      clientUploadId: `${normalizeCaveId(task.caveId)}-${hash.slice(0,24)}`,
+      contentHash: hash,
+      fileExt: 'jpg',
+      originalBytes: task.originalBytes || compressed.originalBytes || 0,
+      compressedBytes: compressed.compressedBytes || 0,
+      compressed: true,
+      recompressedAt: new Date().toISOString()
+    };
+  }
+
   async function uploadTask(task) {
-    const res = await fetch('/api/upload-cave-image', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(task) });
+    setStatus('正在壓縮待上傳照片，請稍候…', 'warn');
+    const fastTask = await normalizePendingTaskForFastUpload(task);
+    const res = await fetch('/api/upload-cave-image', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(fastTask) });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.image || !data.image.src) throw new Error(data.detail || data.error || '照片上傳失敗');
-    upsertImage(task.caveId, data.image); return data.image;
+    upsertImage(fastTask.caveId, data.image); return data.image;
   }
   async function flushPending() {
     if (!navigator.onLine || isUploading) return;
     const queue = getPending(); if (!queue.length) return;
     const remaining = []; let ok = 0;
-    for (const task of queue) { try { await uploadTask(task); ok++; } catch (_) { remaining.push(task); } }
+    for (let i = 0; i < queue.length; i++) {
+      const task = queue[i];
+      try {
+        setStatus(`正在上傳第 ${i + 1} / ${queue.length} 張照片…`, 'warn');
+        await uploadTask(task);
+        ok++;
+      } catch (_) {
+        remaining.push(task);
+      }
+    }
     savePending(remaining); if (ok) setStatus(`已自動補傳 ${ok} 張照片。`, 'ok');
     const current = getOpenCaveId(); if (current) renderNotesIntoModal(current);
   }
@@ -1460,8 +1520,11 @@ if ('serviceWorker' in navigator) {
       let added = 0, skipped = 0;
       for (let i=0; i<files.length; i++) {
         const file = files[i];
-        setStatus(`正在自動壓縮第 ${i + 1} / ${files.length} 張照片，請稍候…`, 'warn');
-        const compressed = await compressImageFile(file, 1600, 0.82);
+        setStatus(`正在快速壓縮第 ${i + 1} / ${files.length} 張照片，請稍候…`, 'warn');
+        let compressed = await compressImageFile(file, 1000, 0.68);
+        if (String(compressed.dataUrl || '').length > 1200 * 1024) {
+          compressed = await compressDataUrlForUpload(compressed.dataUrl, 800, 0.58);
+        }
         const imageDataUrl = compressed.dataUrl;
         const hash = await sha256(imageDataUrl);
         const ext = compressed.ext || 'jpg';
@@ -1493,7 +1556,7 @@ if ('serviceWorker' in navigator) {
     const panel = document.createElement('div'); panel.id = 'mogao-v11-panel'; panel.className = 'mogao-v11-panel mogao-v11-hidden';
     panel.innerHTML = `
       <div class="mogao-v11-card">
-        <div class="flex items-center justify-between p-4 border-b border-stone-700"><div><div class="text-xl font-black text-orange-300">新增洞窟筆記</div><div class="text-xs text-stone-400">照片會自動壓縮後上傳到 Vercel Blob，成功後才會出現在照片牆。</div></div><button id="mogao-v11-close" class="text-3xl text-amber-200">×</button></div>
+        <div class="flex items-center justify-between p-4 border-b border-stone-700"><div><div class="text-xl font-black text-orange-300">新增洞窟筆記</div><div class="text-xs text-stone-400">照片會自動快速壓縮後上傳到 Vercel Blob，成功後才會出現在照片牆。</div></div><button id="mogao-v11-close" class="text-3xl text-amber-200">×</button></div>
         <div class="p-4 space-y-4">
           <label class="block text-sm text-stone-300">洞窟號</label><input id="mogao-v11-cave" class="mogao-v11-field" inputmode="numeric" placeholder="例如 130">
           <label class="block text-sm text-stone-300">文字筆記</label><textarea id="mogao-v11-text" class="mogao-v11-field" rows="4" placeholder="手動輸入筆記"></textarea><button id="mogao-v11-save-text" class="mogao-v11-btn bg-amber-500 text-stone-950 w-full">儲存文字筆記</button>
