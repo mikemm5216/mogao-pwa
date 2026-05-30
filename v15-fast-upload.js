@@ -29,12 +29,6 @@
     return String(value || '').replace(/[^0-9]/g, '');
   }
 
-  function escapeHtml(value) {
-    return String(value || '').replace(/[&<>"']/g, function (ch) {
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
-    });
-  }
-
   function setStatus(message, type) {
     const el = document.getElementById('mogao-v11-status');
     if (!el) return;
@@ -132,7 +126,7 @@
       blob = await canvasToBlob(smaller, 'image/jpeg', 0.48);
     }
 
-    return { blob, width, height, originalBytes: file.size || 0, compressedBytes: blob.size };
+    return { blob, originalBytes: file.size || 0, compressedBytes: blob.size };
   }
 
   function findNote(caveId) {
@@ -157,32 +151,6 @@
     if (!exists) note.images.push(image);
     note.updatedAt = new Date().toISOString();
     saveNotes(notes);
-  }
-
-  function renderNotesIntoModal(caveId) {
-    const id = normalizeCaveId(caveId);
-    if (!id) return;
-    const note = findNote(id);
-    if (!note) return;
-    const modal = document.getElementById('note-modal');
-    if (!modal || modal.classList.contains('hidden')) return;
-    const body = modal.querySelector('.overflow-y-auto');
-    if (!body) return;
-    let box = document.getElementById('mogao-v11-note-render');
-    if (!box) {
-      box = document.createElement('section');
-      box.id = 'mogao-v11-note-render';
-      box.className = 'mt-4 space-y-3';
-      body.appendChild(box);
-    }
-    const images = Array.isArray(note.images) ? note.images : [];
-    const imageHtml = images.map(function (img) {
-      const src = typeof img === 'string' ? img : img.src;
-      const caption = typeof img === 'string' ? '' : (img.caption || '');
-      if (!src || String(src).startsWith('data:')) return '';
-      return '<figure class="mogao-v11-photo-card"><img loading="lazy" src="' + escapeHtml(src) + '" onerror="this.closest(\'figure\').remove()"><figcaption>' + escapeHtml(caption) + '</figcaption></figure>';
-    }).join('');
-    box.innerHTML = (note.content ? '<div class="bg-amber-50 text-stone-900 rounded-xl p-3 whitespace-pre-wrap">' + escapeHtml(note.content) + '</div>' : '') + imageHtml;
   }
 
   async function uploadOneFile(file, caveId, caption) {
@@ -224,8 +192,11 @@
       bytes: json.bytes || compressed.blob.size,
       mode: 'v15-fast-binary'
     };
+
+    // Critical freeze fix:
+    // Only save to localStorage here. Do NOT force-refresh the currently open cave modal.
+    // The base page already has a broad MutationObserver; writing image HTML here can create a DOM mutation loop on mobile.
     upsertImage(caveId, image);
-    renderNotesIntoModal(caveId);
     return image;
   }
 
@@ -252,7 +223,9 @@
       PENDING_KEYS.forEach(function (key) { localStorage.removeItem(key); });
       localStorage.setItem('mogao.pendingPhotos.v14', '[]');
       setPendingText('');
-      if (image) setStatus('完成：照片已上傳並加入這個洞窟。', 'ok');
+      if (image) {
+        setStatus('完成：照片已上傳。請關閉新增視窗，再點一次該洞窟查看照片。', 'ok');
+      }
     } finally {
       setBusy(false);
     }
@@ -290,7 +263,7 @@
     }
 
     clearPending();
-    setStatus('V15 已啟用：一次 1 張，小圖快速上傳，成功才加入照片牆。', 'ok');
+    setStatus('V15 已啟用：一次 1 張，小圖快速上傳，成功才加入照片紀錄。', 'ok');
   }
 
   document.addEventListener('DOMContentLoaded', function () {
