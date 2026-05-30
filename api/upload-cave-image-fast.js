@@ -1,10 +1,6 @@
 const { put } = require('@vercel/blob');
 
-module.exports.config = {
-  api: {
-    bodyParser: false
-  }
-};
+module.exports.config = { api: { bodyParser: false } };
 
 function readRawBody(req, limitBytes) {
   return new Promise((resolve, reject) => {
@@ -13,7 +9,7 @@ function readRawBody(req, limitBytes) {
     req.on('data', (chunk) => {
       total += chunk.length;
       if (total > limitBytes) {
-        reject(new Error('照片壓縮後仍太大，請改選一張照片或降低手機原圖大小。'));
+        reject(new Error('照片壓縮後仍太大，請改選一張照片。'));
         req.destroy();
         return;
       }
@@ -36,7 +32,7 @@ module.exports = async function handler(req, res) {
   if (!token) {
     return res.status(500).json({
       error: 'Vercel Blob 尚未設定',
-      detail: '缺少 BLOB_READ_WRITE_TOKEN。請到 Vercel Project Settings → Environment Variables 新增 BLOB_READ_WRITE_TOKEN，或在 Vercel Storage 連接 Blob store 後重新部署。'
+      detail: '缺少 BLOB_READ_WRITE_TOKEN。請到 Vercel Project Settings → Environment Variables 設定並重新部署。'
     });
   }
 
@@ -59,27 +55,13 @@ module.exports = async function handler(req, res) {
     const safeUploadId = clientUploadId || `${caveId}-${Date.now()}`;
     const pathname = `caves/${caveId}/${safeUploadId}.${ext}`;
 
-    const blob = await put(pathname, body, {
-      access: 'public',
-      contentType,
-      addRandomSuffix: false,
-      token
-    });
+    const blob = await put(pathname, body, { access: 'public', contentType, addRandomSuffix: false, token });
 
     return res.status(200).json({
-      url: blob.url,
-      pathname: blob.pathname,
-      caveId,
-      caption,
-      clientUploadId: safeUploadId,
-      contentHash,
-      bytes: body.length,
-      contentType
+      url: blob.url, pathname: blob.pathname, caveId, caption,
+      clientUploadId: safeUploadId, contentHash, bytes: body.length, contentType
     });
   } catch (error) {
-    return res.status(400).json({
-      error: '照片上傳失敗',
-      detail: error && error.message ? error.message : String(error)
-    });
+    return res.status(400).json({ error: '照片上傳失敗', detail: error && error.message ? error.message : String(error) });
   }
 };
