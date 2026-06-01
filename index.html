@@ -20,10 +20,13 @@
     .small-btn { border:1px solid #78716c; color:#fde68a; background:#292524; border-radius:999px; padding:8px 12px; font-weight:800; }
     #viewer { position:absolute; inset:54px 0 0 0; overflow:hidden; background:#0c0a09; cursor:grab; }
     #stage { position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform; }
-    #mapWrap { position:relative; display:inline-block; min-width:960px; min-height:480px; background:#1c1917; border:1px solid #44403c; }
-    #mapImage { display:block; max-width:none; width:1600px; height:auto; user-select:none; -webkit-user-drag:none; pointer-events:none; }
+    #mapWrap { position:relative; display:inline-block; background:#1c1917; border:1px solid #44403c; }
+    /* V18.1: the stitched panorama is extremely wide and short. Keep image height fixed like the legacy page,
+       so hotspot y percentages are calculated against the real panorama height, not an artificial dark box. */
+    #mapImage { display:block; max-width:none; width:auto; height:60vh; user-select:none; -webkit-user-drag:none; pointer-events:none; }
     #mapFallback { position:absolute; inset:0; display:none; align-items:center; justify-content:center; text-align:center; color:#fcd34d; padding:30px; background:linear-gradient(135deg,#1c1917,#292524); }
-    .hotspot { position:absolute; transform:translate(-50%,-50%); min-width:28px; height:24px; padding:2px 5px; border-radius:5px; border:2px solid rgba(255,255,255,.9); background:rgba(249,115,22,.82); color:#1c1917; font-size:12px; font-weight:900; line-height:18px; text-align:center; box-shadow:0 0 0 3px rgba(249,115,22,.25), 0 6px 16px rgba(0,0,0,.45); z-index:4; }
+    #hotspotLayer { position:absolute; inset:0; pointer-events:none; }
+    .hotspot { position:absolute; transform:translate(-50%,-50%); min-width:28px; height:24px; padding:2px 5px; border-radius:5px; border:2px solid rgba(255,255,255,.9); background:rgba(249,115,22,.82); color:#1c1917; font-size:12px; font-weight:900; line-height:18px; text-align:center; box-shadow:0 0 0 3px rgba(249,115,22,.25), 0 6px 16px rgba(0,0,0,.45); z-index:4; pointer-events:auto; }
     .hotspot:active { transform:translate(-50%,-50%) scale(.92); }
     #noteModal, #editPanel { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.68); padding:12px; }
     .card { width:min(760px,96vw); max-height:90vh; overflow:auto; background:#1c1917; border:2px solid #f97316; border-radius:22px; box-shadow:0 24px 80px rgba(0,0,0,.6); }
@@ -48,7 +51,7 @@
       header { height:50px; }
       #viewer { inset:50px 0 0 0; }
       .row { grid-template-columns:1fr; }
-      #mapImage { width:1400px; }
+      #mapImage { height:56vh; width:auto; }
       .card { max-height:92vh; }
     }
   </style>
@@ -197,8 +200,9 @@
 
   function applyTransform(){ stage.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
   function resetView(){
-    scale = Math.min(window.innerWidth / 1400, 1);
-    if (!isFinite(scale) || scale <= .2) scale = .6;
+    const baseW = mapImage && mapImage.getBoundingClientRect ? mapImage.getBoundingClientRect().width : 1400;
+    scale = Math.min(window.innerWidth / Math.max(baseW, 1), 1);
+    if (!isFinite(scale) || scale <= .08) scale = Math.max(.12, Math.min(.28, window.innerWidth / 1400));
     panX = 20; panY = 30; applyTransform();
   }
 

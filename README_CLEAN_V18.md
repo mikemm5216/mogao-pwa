@@ -38,4 +38,13 @@
 ```
 
 x/y 是百分比座標。
-V18
+
+
+## 2026-06-01 底圖與座標已補入
+
+本包已從你上傳的舊 `index.html` 抽出內嵌全景圖段落，合併為：
+
+- `assets/mogao-map.jpg`：12084 × 640px
+- `data/cave-coordinates.json`：36 個橘色洞窟標籤座標
+
+本包仍然是 clean V18 架構，沒有舊版多張上傳、舊 queue、舊 observer、舊 service-worker HTML patch。
