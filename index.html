@@ -225,7 +225,13 @@
     currentCaveId = id;
     const cave = caves.find(c => String(c.id) === id) || {id, title:id + ' 窟'};
     $('modalTitle').textContent = (cave.title || (id + ' 窟')) + ' 筆記';
-    $('staticInfo').textContent = cave.desc || cave.subtitle || '自訂洞窟資料可放在 data/cave-coordinates.json。';
+    const infoParts = [];
+    if (cave.subtitle) infoParts.push(cave.subtitle);
+    if (cave.note) infoParts.push(cave.note);
+    if (cave.desc) infoParts.push(cave.desc);
+    $('staticInfo').textContent = infoParts.join('
+
+') || '自訂洞窟資料可放在 data/cave-coordinates.json。';
     const text = getTextMap()[id] || '';
     $('textNoteView').textContent = text || '尚無自訂文字筆記。';
     const images = getImageMap()[id] || [];
@@ -249,7 +255,9 @@
       btn.textContent = id;
       btn.style.left = x + '%';
       btn.style.top = y + '%';
-      btn.addEventListener('click', (ev) => { ev.stopPropagation(); if (!moved) openCave(id); });
+      btn.addEventListener('pointerdown', (ev) => { ev.stopPropagation(); });
+      btn.addEventListener('pointerup', (ev) => { ev.stopPropagation(); });
+      btn.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); openCave(id); });
       hotspotLayer.appendChild(btn);
     });
   }
@@ -363,7 +371,11 @@
     $('saveTextBtn').onclick = saveText;
     $('clearBadDataBtn').onclick = clearOldPollution;
     $('uploadBtn').onclick = () => uploadPhoto().catch(err => setStatus(err.message || String(err), 'bad'));
-    viewer.addEventListener('pointerdown', ev => { dragging = true; moved = false; startX = ev.clientX; startY = ev.clientY; baseX = panX; baseY = panY; viewer.setPointerCapture(ev.pointerId); });
+    viewer.addEventListener('pointerdown', ev => {
+      if (ev.target && ev.target.closest && ev.target.closest('.hotspot, button, input, textarea')) return;
+      dragging = true; moved = false; startX = ev.clientX; startY = ev.clientY; baseX = panX; baseY = panY;
+      try { viewer.setPointerCapture(ev.pointerId); } catch {}
+    });
     viewer.addEventListener('pointermove', ev => { if (!dragging) return; const dx = ev.clientX-startX, dy = ev.clientY-startY; if (Math.abs(dx)+Math.abs(dy)>5) moved = true; panX=baseX+dx; panY=baseY+dy; applyTransform(); });
     viewer.addEventListener('pointerup', ev => { dragging = false; try { viewer.releasePointerCapture(ev.pointerId); } catch {} });
     viewer.addEventListener('wheel', ev => { ev.preventDefault(); scale = Math.max(.2, Math.min(4, scale * (ev.deltaY < 0 ? 1.08 : .92))); applyTransform(); }, {passive:false});
