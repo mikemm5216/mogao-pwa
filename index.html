@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>莫高窟互動筆記 V18 Clean</title>
+  <title>莫高窟互動筆記 V18.2 Verified</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <meta name="theme-color" content="#0c0a09" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -59,7 +59,7 @@
 <body>
   <header>
     <span aria-hidden="true">🕌</span>
-    <h1>莫高窟崖面互動筆記 V18 Clean</h1>
+    <h1>莫高窟崖面互動筆記 V18.2 Verified</h1>
     <div class="header-actions">
       <button id="zoomOut" class="small-btn">－</button>
       <button id="zoomIn" class="small-btn">＋</button>
@@ -200,10 +200,13 @@
 
   function applyTransform(){ stage.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; }
   function resetView(){
-    const baseW = mapImage && mapImage.getBoundingClientRect ? mapImage.getBoundingClientRect().width : 1400;
-    scale = Math.min(window.innerWidth / Math.max(baseW, 1), 1);
-    if (!isFinite(scale) || scale <= .08) scale = Math.max(.12, Math.min(.28, window.innerWidth / 1400));
-    panX = 20; panY = 30; applyTransform();
+    // V18.2 verified: do NOT shrink the stitched panorama to fit screen width.
+    // The legacy page showed each segment at ~60vh height and used horizontal panning.
+    // Shrinking the whole stage makes the map a thin strip and makes labels look detached.
+    scale = 1;
+    panX = 20;
+    panY = 30;
+    applyTransform();
   }
 
   function openEdit(caveId=''){

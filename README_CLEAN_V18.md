@@ -48,3 +48,13 @@ x/y 是百分比座標。
 - `data/cave-coordinates.json`：36 個橘色洞窟標籤座標
 
 本包仍然是 clean V18 架構，沒有舊版多張上傳、舊 queue、舊 observer、舊 service-worker HTML patch。
+
+
+## V18.2 verified alignment note
+
+- Source file: uploaded legacy `index.html`.
+- Extracted inline hotspot count: 36.
+- Stitched map size: 12084 x 640.
+- Hotspot coordinates are converted from each legacy image container's local `left:%; top:%` into one global stitched-map percentage system.
+- `assets/coordinate-debug.jpg` is included as a visual proof image with labels baked onto the stitched map.
+- Important: the uploaded legacy file contains 36 inline hotspots, not 131. To restore 131 labels, provide the full 131-coordinate source file.
