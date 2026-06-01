@@ -1,371 +1,371 @@
 [
-    {
-        "id": "3",
-        "x": 76.1,
-        "y": 18.1,
-        "title": "\u7b2c3\u7a9f\uff5c\u5343\u4f5b\u5eca",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3002\u7b2c3\u7a9f\u53c8\u7a31\u5343\u4f5b\u5eca\uff0c\u4fdd\u5b58\u5927\u91cf\u4f5b\u50cf\uff0c\u91cd\u9ede\u662f\u300c\u5343\u4f5b\u5343\u9762\u300d\u7684\u9023\u7e8c\u9020\u50cf\u6548\u679c\u3002\u666e\u7a9f\u8cc7\u6599\u4e2d\u5217\u70ba\u6700\u5177\u89c0\u8cde\u6027\u7684\u6d1e\u7a9f\u4e4b\u4e00\u3002\n\n\u770b\u9ede\uff1a\u4e0d\u8981\u53ea\u770b\u4f5b\u50cf\u6578\u91cf\uff0c\u4e5f\u7559\u610f\u6bcf\u5c0a\u4f5b\u50cf\u795e\u60c5\u3001\u59ff\u614b\u8207\u6392\u5217\u7bc0\u594f\u3002",
-        "imageCaptions": [
-            "\u7b2c3\u7a9f\u5343\u4f5b\u5eca\u4f5b\u50cf\u7fa4\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "4",
-        "x": 66.4,
-        "y": 8.9,
-        "title": "\u7b2c4\u7a9f\uff5c\u4e0a\u4e03\u4f5b\u95a3\uff0f\u6563\u82b1\u6a13",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3001\u5317\u5468\u91cd\u9ede\u7a9f\u3002\u7b2c4\u7a9f\u53c8\u7a31\u4e0a\u4e03\u4f5b\u95a3\u3001\u6563\u82b1\u6a13\uff0c\u662f\u9ea5\u7a4d\u5c71\u898f\u6a21\u5927\u3001\u4f4d\u7f6e\u9ad8\u7684\u91cd\u8981\u5d16\u95a3\u5f0f\u6d1e\u7a9f\u3002\u8cc7\u6599\u4e2d\u63d0\u5230\u5b83\u6700\u9a5a\u8c54\u7684\u91cd\u9ede\u662f\u5317\u5468\u539f\u4f5c\u58c1\u756b\uff0c\u4ee5\u53ca\u8584\u8089\u5851\u98db\u5929\uff0c\u85dd\u8853\u6c34\u6e96\u5f88\u9ad8\u3002\n\n\u88dc\u5145\uff1a\u5317\u5468\u6642\u671f\u5927\u7a9f\u4ee3\u8868\u4e4b\u4e00\u3002\u7b2c4\u7a9f\u4e5f\u6709\u91d1\u525b\u529b\u58eb\u50cf\u982d\u90e8\u3001\u7b2c\u4e09\u9f95\u53f3\u58c1\u5167\u5074\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u624b\u90e8\u3001\u7b2c\u56db\u9f95\u5916\u4e0a\u65b9\u8584\u8089\u5851\u98db\u5929\u7b49\u91cd\u8981\u5716\u50cf\u8cc7\u6599\u3002",
-        "imageCaptions": [
-            "\u7b2c4\u7a9f\u7b2c\u4e09\u9f95\u53f3\u58c1\u5167\u5074\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u624b\u90e8\u3002",
-            "\u7b2c4\u7a9f\u7a9f\u5de6\u7aef\u91d1\u525b\u529b\u58eb\u50cf\u982d\u90e8\uff0c\u4ef0\u8996\u5c40\u90e8\u3002",
-            "\u7b2c4\u7a9f\u7b2c\u56db\u9f95\u5916\u4e0a\u65b9\u8584\u8089\u5851\u98db\u5929\u3002"
-        ]
-    },
-    {
-        "id": "5",
-        "x": 53.8,
-        "y": 19.3,
-        "title": "\u7b2c5\u7a9f\uff5c\u725b\u5152\u5802",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3001\u968b\u5510\u91cd\u9ede\u7a9f\u3002\u7b2c5\u7a9f\u53c8\u7a31\u725b\u5152\u5802\uff0c\u4e3b\u5c0a\u70ba\u501a\u5750\u4f5b\uff0c\u662f\u73fe\u5b58\u5c11\u898b\u7684\u5510\u4ee3\u9020\u50cf\u4e4b\u4e00\uff0c\u524d\u5eca\u300c\u8e0f\u725b\u5929\u738b\u300d\u503c\u5f97\u770b\u3002\n\n\u88dc\u5145\uff1a\u8cc7\u6599\u4e2d\u53e6\u6709\u7b2c5\u7a9f\u5916\u5eca\u5de6\u9f95\u8207\u4e2d\u9f95\u672c\u5c0a\u91cb\u8fe6\u725f\u5c3c\u5750\u50cf\u5c40\u90e8\uff0c\u53ef\u4f5c\u70ba\u968b\u4ee3\u5f69\u5851\u8207\u5f8c\u4e16\u599d\u4fee\u7684\u89c0\u5bdf\u8cc7\u6599\u3002",
-        "imageCaptions": [
-            "\u7b2c5\u7a9f\u5916\u5eca\u5de6\u9f95\uff0c\u4e09\u4e16\u4f5b\u3001\u501a\u5750\u5f4c\u52d2\u4f5b\u548c\u8105\u4f8d\u83e9\u85a9\u50cf\u3002",
-            "\u7b2c5\u7a9f\u4e2d\u9f95\u672c\u5c0a\u91cb\u8fe6\u725f\u5c3c\u5750\u50cf\u5c40\u90e8\u3002"
-        ]
-    },
-    {
-        "id": "9",
-        "x": 73.8,
-        "y": 36.1,
-        "title": "\u7b2c9\u7a9f\uff5c\u4e2d\u4e03\u4f5b\u95a3",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3001\u5317\u5468\u91cd\u9ede\u7a9f\u3002\u7b2c9\u7a9f\u53c8\u7a31\u4e2d\u4e03\u4f5b\u95a3\uff0c\u6709\u4e03\u500b\u4f5b\u9f95\uff0c\u6bcf\u9f95\u6709\u4e00\u4f5b\u4e8c\u83e9\u85a9\u3002\u7b2c\u56db\u9f95\u9802\u90e8\u6709\u96d9\u982d\u7ae5\u5b50\u50cf\uff0c\u4e5f\u5c31\u662f\u5171\u547d\u9ce5\uff0c\u4e26\u9023\u7d50\u300c\u5bb3\u4eba\u7d42\u5bb3\u5df1\u300d\u7684\u6545\u4e8b\u3002",
-        "imageCaptions": [
-            "\u7b2c9\u7a9f\u4e2d\u4e03\u4f5b\u95a3\u3002"
-        ]
-    },
-    {
-        "id": "13",
-        "x": 56.2,
-        "y": 37.0,
-        "title": "\u7b2c13\u7a9f\uff5c\u6771\u5d16\u5927\u4f5b",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3001\u968b\u4ee3\uff0f\u5b8b\u4ee3\u91cd\u4fee\u91cd\u9ede\u3002\u7b2c13\u7a9f\u662f\u6771\u5d16\u5927\u4f5b\uff0c\u4e5f\u662f\u9ea5\u7a4d\u5c71\u6700\u5927\u7684\u9020\u50cf\u3002\u4e3b\u4f5b\u7709\u5fc3\u66fe\u51fa\u571f\u5b8b\u4ee3\u5b9a\u7aaf\u74f7\u7897\u548c\u5510\u6284\u672c\u300a\u91d1\u5149\u660e\u7d93\u300b\u3002\n\n\u88dc\u5145\uff1a\u7b2c13\u7a9f\u70ba\u77f3\u80ce\u6ce5\u5851\uff0c\u4e3b\u5c0a\u70ba\u963f\u5f4c\u9640\u4f5b\uff0c\u5de6\u53f3\u70ba\u89c0\u4e16\u97f3\u8207\u5927\u52e2\u81f3\u83e9\u85a9\u3002\u8cc7\u6599\u4e2d\u5716\u7247\u8aaa\u660e\u70ba\u300c\u897f\u65b9\u4e09\u8056\uff0c\u4e2d\u70ba\u963f\u5f4c\u9640\u4f5b\uff0c\u5de6\u70ba\u5927\u52e2\u81f3\u83e9\u85a9\uff0c\u53f3\u70ba\u89c0\u4e16\u97f3\u83e9\u85a9\u300d\u3002",
-        "imageCaptions": [
-            "\u7b2c13\u7a9f\u897f\u65b9\u4e09\u8056\uff0c\u4e2d\u70ba\u963f\u5f4c\u9640\u4f5b\uff0c\u5de6\u70ba\u5927\u52e2\u81f3\u83e9\u85a9\uff0c\u53f3\u70ba\u89c0\u4e16\u97f3\u83e9\u85a9\u3002"
-        ]
-    },
-    {
-        "id": "14",
-        "x": 54.0,
-        "y": 31.2,
-        "title": "\u7b2c14\u7a9f\uff5c\u5de6\u8105\u4f8d\u83e9\u85a9\u548c\u91d1\u525b\u529b\u58eb\u50cf",
-        "note": "\u5206\u985e\uff1a\u968b\u4ee3\u5f69\u5851\u8cc7\u6599\u3002\u7b2c14\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u5de6\u8105\u4f8d\u83e9\u85a9\u548c\u91d1\u525b\u529b\u58eb\u50cf\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\uff0c\u800c\u4e0d\u662f\u53ea\u653e\u5e74\u4ee3\u4ecb\u7d39\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c14\u7a9f\u5de6\u8105\u4f8d\u83e9\u85a9\u548c\u91d1\u525b\u529b\u58eb\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "15",
-        "x": 50.0,
-        "y": 30.5,
-        "title": "\u7b2c15\u7a9f\uff5c\u6b63\u58c1\u5750\u4f5b\u5de6\u5c0a\u982d\u90e8",
-        "note": "\u5206\u985e\uff1a\u5b8b\u4ee3\u4fee\u3001\u660e\u4ee3\u599d\u5f69\u5851\u8cc7\u6599\u3002\u7b2c15\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u6b63\u58c1\u5750\u4f5b\u5de6\u5c0a\u982d\u90e8\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c15\u7a9f\u6b63\u58c1\u5750\u4f5b\u5de6\u5c0a\u982d\u90e8\u3002"
-        ]
-    },
-    {
-        "id": "26",
-        "x": 47.0,
-        "y": 24.8,
-        "title": "\u7b2c26\u7a9f\uff5c\u53f3\u8105\u4f8d\u83e9\u85a9\u548c\u4f9b\u990a\u6bd4\u4e18\u50cf",
-        "note": "\u5206\u985e\uff1a\u5317\u5468\u7a9f\uff0c\u968b\u3001\u5510\u4ee3\u5851\uff0c\u5b8b\u4ee3\u4fee\u5f69\u5851\u8cc7\u6599\u3002\u7b2c26\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u53f3\u8105\u4f8d\u83e9\u85a9\u548c\u4f9b\u990a\u6bd4\u4e18\u50cf\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c26\u7a9f\u53f3\u8105\u4f8d\u83e9\u85a9\u548c\u4f9b\u990a\u6bd4\u4e18\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "43",
-        "x": 52.2,
-        "y": 48.4,
-        "title": "\u7b2c43\u7a9f\uff5c\u4e59\u5f17\u7687\u540e\u5893",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u897f\u9b4f\u3002\u7b2c43\u7a9f\u8207\u4e59\u5f17\u7687\u540e\u5893\u76f8\u95dc\uff0c\u662f\u897f\u9b4f\u6642\u671f\u7684\u91cd\u8981\u6d1e\u7a9f\u3002\u666e\u7a9f\uff0f\u7279\u7a9f\u8cc7\u6599\u628a\u5b83\u5217\u5165\u7279\u7a9f\u540d\u55ae\u3002\n\n\u88dc\u5145\uff1a\u897f\u9b4f\u6642\u671f\u958b\u7a9f\u4e2d\uff0c\u7b2c43\u300144\u3001102\u3001105\u3001123\u3001127\u3001135\u7b49\u7a9f\u662f\u91cd\u8981\u4ee3\u8868\uff0c\u4e26\u8207\u897f\u9b4f\u7687\u5ba4\u53ca\u4e59\u5f17\u6c0f\u5230\u9ea5\u7a4d\u5c71\u51fa\u5bb6\u80cc\u666f\u6709\u95dc\u3002",
-        "imageCaptions": [
-            "\u7b2c43\u7a9f\u4e59\u5f17\u7687\u540e\u5893\u76f8\u95dc\u6d1e\u7a9f\u3002"
-        ]
-    },
-    {
-        "id": "44",
-        "x": 43.4,
-        "y": 51.8,
-        "title": "\u7b2c44\u7a9f\uff5c\u963f\u5f4c\u9640\u4f5b\u7684\u5fae\u7b11",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u897f\u9b4f\u3002\u7b2c44\u7a9f\u662f\u9ea5\u7a4d\u5c71\u6700\u91cd\u8981\u7684\u897f\u9b4f\u5f69\u7e6a\u6ce5\u5851\u4e4b\u4e00\u3002\u4e3b\u5c0a\u963f\u5f4c\u9640\u5982\u4f86\u5fae\u7b11\u5b89\u8a73\uff0c\u88ab\u7a31\u70ba\u300c\u6771\u65b9\u7684\u8499\u5a1c\u9e97\u838e\u300d\u3002\u6b63\u58c1\u963f\u5f4c\u9640\u5982\u4f86\u9ad8\u7d041.60\u7c73\uff0c\u982d\u9802\u6e26\u7d0b\uff0c\u9762\u5f62\u65b9\u5713\uff0c\u7709\u76ee\u6e05\u79c0\uff0c\u4fef\u8996\u542b\u7b11\uff0c\u795e\u614b\u6148\u60b2\u5b89\u8a73\u3002\n\n\u512a\u5148\u7d1a\uff1a\u6700\u9ad8\u3002",
-        "imageCaptions": [
-            "\u7b2c44\u7a9f\u897f\u9b4f\u5f69\u7e6a\u6ce5\u5851\u963f\u5f4c\u9640\u5982\u4f86\u3002",
-            "\u963f\u5f4c\u9640\u4f5b\u7684\u5fae\u7b11\uff0f\u6771\u65b9\u7684\u8499\u5a1c\u9e97\u838e\u3002"
-        ]
-    },
-    {
-        "id": "45",
-        "x": 24.6,
-        "y": 51.9,
-        "title": "\u7b2c45\u7a9f\uff5c\u5317\u5468\u6642\u4ee3\u4f5b\u50cf",
-        "note": "\u5206\u985e\uff1a\u88dc\u5145\u89c0\u5bdf\u7a9f\u3002\u7b2c45\u7a9f\u53ef\u4f5c\u70ba\u5317\u5468\u6642\u671f\u9020\u50cf\u98a8\u683c\u7684\u53c3\u8003\u9ede\u3002\u770b\u5716\u6642\u53ef\u8207\u5317\u9b4f\u3001\u897f\u9b4f\u6d1e\u7a9f\u6bd4\u8f03\uff0c\u89c0\u5bdf\u4eba\u7269\u9762\u76f8\u8207\u8863\u7d0b\u7531\u6e05\u7626\u8d70\u5411\u8f03\u5713\u6f64\u81ea\u7136\u7684\u8b8a\u5316\u3002",
-        "imageCaptions": [
-            "\u7b2c45\u7a9f\u5317\u5468\u6642\u4ee3\u4f5b\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "62",
-        "x": 37.4,
-        "y": 55.6,
-        "title": "\u7b2c62\u7a9f\uff5c\u4fdd\u5b58\u6700\u597d\u7684\u5317\u5468\u4f5b\u7a9f",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u5468\u3002\u7b2c62\u7a9f\u88ab\u5217\u70ba\u4fdd\u5b58\u6700\u597d\u7684\u5317\u5468\u4f5b\u7a9f\u3002\u666e\u7a9f\uff0f\u7279\u7a9f\u8cc7\u6599\u5217\u70ba\u984d\u5916\u6536\u8cbb\u7279\u7a9f\u4e4b\u4e00\u3002\n\n\u88dc\u5145\uff1a\u8cc7\u6599\u4e2d\u53e6\u6709\u7b2c62\u7a9f\u53f3\u9f95\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u6b63\u9762\u5716\u50cf\u8aaa\u660e\u3002\u7b2c62\u7a9f\u660e\u78ba\u6709\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\uff0c\u540c\u6642\u4e5f\u53ef\u5728\u5e74\u4ee3\u9801\u4f5c\u70ba\u5317\u5468\u4ee3\u8868\u7d22\u5f15\u3002",
-        "imageCaptions": [
-            "\u7b2c62\u7a9f\u53f3\u9f95\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u3002",
-            "\u7b2c62\u7a9f\u53f3\u9f95\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u6b63\u9762\u3002"
-        ]
-    },
-    {
-        "id": "70",
-        "x": 35.0,
-        "y": 62.0,
-        "title": "\u7b2c70\u7a9f\uff5c\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u548c\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf",
-        "note": "\u5206\u985e\uff1a\u5317\u9b4f\u65e9\u671f\u5f69\u5851\u8cc7\u6599\u3002\u7b2c70\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u548c\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c70\u7a9f\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u548c\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "74",
-        "x": 38.4,
-        "y": 66.4,
-        "title": "\u7b2c74\u7a9f\uff5c\u9ea5\u7a4d\u5c71\u73fe\u5b58\u6700\u65e9\u9020\u50cf\u4e4b\u4e00",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u65e9\u671f\u3002\u7b2c74\u7a9f\u662f\u9ea5\u7a4d\u5c71\u73fe\u5b58\u6700\u65e9\u9020\u50cf\u4e4b\u4e00\uff0c\u88ab\u5217\u5165\u7279\u7a9f\u6e05\u55ae\u3002\n\n\u88dc\u5145\uff1a\u65e9\u671f\u77f3\u7a9f\u7814\u7a76\u4e2d\uff0c\u7b2c74\u300178\u300190\u3001100\u3001128\u3001165\u7b49\u7a9f\u88ab\u5217\u70ba\u5317\u9b4f\u65e9\u671f\u7a9f\u9f95\u3002\u8cc7\u6599\u4e2d\u53e6\u6709\u300c\u7b2c74\u7a9f\u53f3\u58c1\u5982\u4f86\u5750\u50cf\u982d\u90e8\u300d\u5716\u50cf\u8aaa\u660e\uff0c\u56e0\u6b64\u9019\u7b46\u76f4\u63a5\u6b78\u5165\u7b2c74\u7a9f\u3002",
-        "imageCaptions": [
-            "\u7b2c74\u7a9f\u53f3\u58c1\u5982\u4f86\u5750\u50cf\u982d\u90e8\u3002"
-        ]
-    },
-    {
-        "id": "76",
-        "x": 8.8,
-        "y": 56.0,
-        "title": "\u7b2c76\u7a9f\uff5c\u5b8c\u6574\u98db\u5929\u85fb\u4e95",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u4e2d\u671f\u3002\u7b2c76\u7a9f\u662f\u9ea5\u7a4d\u5c71\u6700\u5b8c\u6574\u7684\u98db\u5929\u85fb\u4e95\u4e4b\u4e00\uff0c\u88ab\u5217\u70ba\u7279\u7a9f\u6e05\u55ae\u3002\n\n\u88dc\u5145\uff1a\u5317\u9b4f\u4e2d\u671f\u4ee3\u8868\u6d1e\u7a9f\u5305\u542b\u7b2c23\u300176\u300186\u300189\u300192\u300193\u3001115\u3001155\u3001159\u3001163\u7b49\u7a9f\u3002",
-        "imageCaptions": [
-            "\u7b2c76\u7a9f\u98db\u5929\u85fb\u4e95\u3002"
-        ]
-    },
-    {
-        "id": "78",
-        "x": 13.0,
-        "y": 50.4,
-        "title": "\u7b2c78\u7a9f\uff5c\u65e9\u671f\u5317\u9b4f\u6d1e\u7a9f",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\uff0f\u65e9\u671f\u6d1e\u7a9f\u3001\u5317\u9b4f\u3002\u7b2c78\u7a9f\u662f\u5317\u9b4f\u65e9\u671f\u4ee3\u8868\u6d1e\u7a9f\u4e4b\u4e00\u3002\u8cc7\u6599\u4e2d\u8aaa\u7b2c75\u8207\u7b2c78\u7a9f\u5f62\u5236\u76f8\u4f3c\uff0c\u7b2c78\u7a9f\u70ba\u6a6b\u9577\u65b9\u5f62\u3001\u5e73\u9802\uff0c\u6b63\u58c1\u548c\u5de6\u53f3\u58c1\u4e0b\u90e8\u6709\u5012\u51f9\u5b57\u5f62\u9ad8\u4f5b\u58c7\uff0c\u58c7\u4e0a\u5851\u9020\u578b\u53e4\u6a38\u3001\u8eab\u8ec0\u96c4\u5065\u7684\u5750\u4f5b\u3002",
-        "imageCaptions": [
-            "\u7b2c78\u7a9f\u6b63\u58c1\u4e3b\u4f5b\u3002"
-        ]
-    },
-    {
-        "id": "80",
-        "x": 30.2,
-        "y": 50.5,
-        "title": "\u7b2c80\u7a9f\uff5c\u88dc\u5145\u89c0\u5bdf\u9ede",
-        "note": "\u5206\u985e\uff1a\u88dc\u5145\u89c0\u5bdf\u7a9f\u3002\u73fe\u6709\u6574\u7406\u8cc7\u6599\u5c0d\u7b2c80\u7a9f\u6c92\u6709\u5b8c\u6574\u5c08\u6bb5\uff0c\u5148\u4fdd\u7559\u70ba\u6a58\u8272\u6a19\u7c64\u8207\u73fe\u5834\u7b46\u8a18\u5165\u53e3\u3002\u53ef\u5728\u73fe\u5834\u88dc\u5145\u8aaa\u660e\u724c\u3001\u5be6\u62cd\u7167\u7247\u8207\u5bb6\u4eba\u89c0\u5bdf\u3002",
-        "imageCaptions": [
-            "\u7b2c80\u7a9f\u73fe\u5834\u88dc\u5145\u7167\u7247\u3002"
-        ]
-    },
-    {
-        "id": "81",
-        "x": 32.8,
-        "y": 52.8,
-        "title": "\u7b2c81\u7a9f\uff5c\u6b63\u9f95\u672c\u5c0a\u5982\u4f86\u5750\u50cf",
-        "note": "\u5206\u985e\uff1a\u5317\u9b4f\u5f69\u5851\u8cc7\u6599\u3002\u7b2c81\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u6b63\u9f95\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c81\u7a9f\u6b63\u9f95\u672c\u5c0a\u5982\u4f86\u5750\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "85",
-        "x": 34.8,
-        "y": 50.8,
-        "title": "\u7b2c85\u7a9f\uff5c\u5de6\u8105\u4f8d\u83e9\u85a9\u548c\u963f\u96e3\u5f1f\u5b50\u7acb\u50cf",
-        "note": "\u5206\u985e\uff1a\u5317\u9b4f\u5f69\u5851\u8cc7\u6599\u3002\u7b2c85\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u5de6\u8105\u4f8d\u83e9\u85a9\u548c\u963f\u96e3\u5f1f\u5b50\u7acb\u50cf\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c85\u7a9f\u5de6\u8105\u4f8d\u83e9\u85a9\u548c\u963f\u96e3\u5f1f\u5b50\u7acb\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "87",
-        "x": 36.8,
-        "y": 48.8,
-        "title": "\u7b2c87\u7a9f\uff5c\u6b63\u58c1\u53f3\u5074\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u5c40\u90e8",
-        "note": "\u5206\u985e\uff1a\u5317\u9b4f\u5f69\u5851\u8cc7\u6599\u3002\u7b2c87\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u6b63\u58c1\u53f3\u5074\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u5c40\u90e8\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c87\u7a9f\u6b63\u58c1\u53f3\u5074\u8105\u4f8d\u83e9\u85a9\u7acb\u50cf\u5c40\u90e8\u3002"
-        ]
-    },
-    {
-        "id": "98",
-        "x": 31.5,
-        "y": 45.0,
-        "title": "\u7b2c98\u7a9f\uff5c\u897f\u5d16\u5927\u4f5b",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3002\u7b2c98\u7a9f\u70ba\u897f\u5d16\u5927\u4f5b\uff0c\u8cc7\u6599\u63d0\u5230\u4e3b\u4f5b\u80f8\u90e8\u66fe\u51fa\u571f\u9322\u5e63\u3001\u74d4\u73de\uff0c\u8f03\u70ba\u7f55\u898b\u3002\n\n\u770b\u6cd5\uff1a\u53ef\u548c\u7b2c13\u7a9f\u6771\u5d16\u5927\u4f5b\u5c0d\u7167\uff0c\u4e00\u6771\u4e00\u897f\u770b\u9ea5\u7a4d\u5c71\u5927\u578b\u9020\u50cf\u3002",
-        "imageCaptions": [
-            "\u7b2c98\u7a9f\u897f\u5d16\u5927\u4f5b\u3002"
-        ]
-    },
-    {
-        "id": "100",
-        "x": 30.8,
-        "y": 34.0,
-        "title": "\u7b2c100\u7a9f\uff5c\u897f\u9b4f\u83e9\u85a9\u6b98\u4ef6",
-        "note": "\u5206\u985e\uff1a\u897f\u9b4f\u5f69\u5851\uff0f\u5851\u50cf\u8cc7\u6599\u3002\u7b2c100\u7a9f\u8cc7\u6599\u4e2d\u6709\u5169\u7b46\u660e\u78ba\u5716\u50cf\uff1a\u5176\u4e00\u70ba\u300c\u83e9\u85a9\u5750\u50cf\u6b98\u7f3a\u300d\uff0c\u4e26\u8a3b\u660e\u6b64\u5851\u50cf\u73fe\u5b58\u7b2c102\u7a9f\uff0c\u5e74\u4ee3\u70ba\u897f\u9b4f\uff1b\u5176\u4e8c\u70ba\u300c\u83e9\u85a9\u7acb\u50cf\u6b98\u7f3a\u300d\u3002\n\n\u8655\u7406\u65b9\u5f0f\uff1a\u4e3b\u6b78\u5c6c\u4ecd\u70ba\u7b2c100\u7a9f\uff1b\u7b2c102\u7a9f\u53ef\u4ea4\u53c9\u8a3b\u660e\u7b2c100\u7a9f\u6b98\u4ef6\u73fe\u5b58\u65bc102\u7a9f\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c100\u7a9f\u83e9\u85a9\u5750\u50cf\u6b98\u4ef6\uff0c\u73fe\u5b58\u7b2c102\u7a9f\uff0c\u5e74\u4ee3\u70ba\u897f\u9b4f\u3002",
-            "\u7b2c100\u7a9f\u83e9\u85a9\u7acb\u50cf\u6b98\u4ef6\u3002"
-        ]
-    },
-    {
-        "id": "102",
-        "x": 29.8,
-        "y": 27.0,
-        "title": "\u7b2c102\u7a9f\uff5c\u5728\u5bb6\u83e9\u85a9\u7dad\u6469\u8a70",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u897f\u9b4f\u3002\u7b2c102\u7a9f\u88ab\u5217\u70ba\u7279\u7a9f\uff0c\u91cd\u9ede\u662f\u5728\u5bb6\u83e9\u85a9\u7dad\u6469\u8a70\u984c\u6750\u3002\n\n\u88dc\u5145\uff1a\u897f\u9b4f\u6642\u671f\u8cc7\u6599\u628a\u7b2c102\u7a9f\u5217\u5165\u897f\u9b4f\u958b\u947f\u6d1e\u7a9f\u5e8f\u5217\u3002\u53e6\u6709\u8cc7\u6599\u63d0\u5230\u7b2c100\u7a9f\u83e9\u85a9\u5750\u50cf\u6b98\u4ef6\u73fe\u5b58\u65bc\u7b2c102\u7a9f\uff0c\u5e74\u4ee3\u70ba\u897f\u9b4f\uff0c\u56e0\u6b64\u7b2c102\u7a9f\u53ef\u4f5c\u70ba\u7b2c100\u7a9f\u6b98\u4ef6\u7684\u73fe\u5b58\u4f4d\u7f6e\u4ea4\u53c9\u53c3\u7167\u3002",
-        "imageCaptions": [
-            "\u7b2c100\u7a9f\u83e9\u85a9\u5750\u50cf\u6b98\u4ef6\uff0c\u73fe\u5b58\u7b2c102\u7a9f\uff0c\u5e74\u4ee3\u70ba\u897f\u9b4f\u3002"
-        ]
-    },
-    {
-        "id": "115",
-        "x": 36.1,
-        "y": 28.6,
-        "title": "\u7b2c115\u7a9f\uff5c\u552f\u4e00\u6709\u9020\u50cf\u7d00\u5e74\u7684\u6d1e\u7a9f",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u665a\u671f\u3002\u7b2c115\u7a9f\u662f\u9ea5\u7a4d\u5c71\u73fe\u5b58\u6700\u65e9\u9020\u7a9f\u7d00\u5e74\u984c\u8a18\u7684\u91cd\u8981\u6a19\u6e96\u6d1e\u7a9f\uff0c\u4fdd\u5b58\u300c\u5927\u4ee3\u666f\u660e\u4e09\u5e74\u300d\u9577\u7bc7\u767c\u9858\u6587\u3002\u5b83\u662f\u5224\u5b9a\u5317\u9b4f\u665a\u671f\u6d1e\u7a9f\u5e74\u4ee3\u7684\u91cd\u8981\u4f9d\u64da\u3002",
-        "imageCaptions": [
-            "\u7b2c115\u7a9f\u6b63\u58c1\u4e3b\u4f5b\u548c\u5de6\u58c1\u7acb\u83e9\u85a9\u3002"
-        ]
-    },
-    {
-        "id": "117",
-        "x": 37.9,
-        "y": 28.9,
-        "title": "\u7b2c117\u7a9f\uff5c\u9020\u50cf\u88dc\u5145\u9ede",
-        "note": "\u5206\u985e\uff1a\u88dc\u5145\u89c0\u5bdf\u7a9f\u3002\u7b2c117\u7a9f\u53ef\u4f5c\u70ba\u7b2c115\u7a9f\u9644\u8fd1\u7684\u88dc\u5145\u89c0\u5bdf\u9ede\uff0c\u9069\u5408\u548c\u9130\u8fd1\u6d1e\u7a9f\u4e00\u8d77\u770b\u4f4d\u7f6e\u8207\u9020\u50cf\u98a8\u683c\u3002",
-        "imageCaptions": [
-            "\u7b2c117\u7a9f\u73fe\u5834\u88dc\u5145\u7167\u7247\u3002"
-        ]
-    },
-    {
-        "id": "120",
-        "x": 25.5,
-        "y": 30.8,
-        "title": "\u7b2c120\u7a9f\uff5c\u672c\u5c0a\u91cb\u8fe6\u5982\u4f86\u5750\u50cf\u5c40\u90e8",
-        "note": "\u5206\u985e\uff1a\u897f\u9b4f\u5f69\u5851\u8cc7\u6599\u3002\u7b2c120\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u672c\u5c0a\u91cb\u8fe6\u5982\u4f86\u5750\u50cf\u5c40\u90e8\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c120\u7a9f\u672c\u5c0a\u91cb\u8fe6\u5982\u4f86\u5750\u50cf\u5c40\u90e8\u3002"
-        ]
-    },
-    {
-        "id": "121",
-        "x": 22.5,
-        "y": 28.0,
-        "title": "\u7b2c121\u7a9f\uff5c\u7aca\u7aca\u79c1\u8a9e\u50cf",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u665a\u671f\u3002\u7b2c121\u7a9f\u4ee5\u300c\u7aca\u7aca\u79c1\u8a9e\u50cf\u300d\u8457\u540d\uff0c\u795e\u614b\u5728\u4f5b\u6559\u85dd\u8853\u9020\u50cf\u4e2d\u975e\u5e38\u7368\u7279\u3002\n\n\u88dc\u5145\uff1a\u5317\u9b4f\u665a\u671f\u4ee3\u8868\u7a9f\u9f95\u4e5f\u5305\u62ec\u7b2c121\u3001122\u3001133\u3001142\u3001154\u7b49\u7a9f\u3002",
-        "imageCaptions": [
-            "\u7b2c121\u7a9f\u7aca\u7aca\u79c1\u8a9e\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "123",
-        "x": 24.2,
-        "y": 87.4,
-        "title": "\u7b2c123\u7a9f\uff5c\u7ae5\u7537\u7ae5\u5973\u50cf",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u897f\u9b4f\u3002\u7b2c123\u7a9f\u4ee5\u7ae5\u7537\u7ae5\u5973\u50cf\u8457\u540d\uff0c\u5f62\u8c61\u5929\u771f\u3001\u7a1a\u6c23\u3002\n\n\u88dc\u5145\uff1a\u897f\u9b4f\u958b\u7a9f\u4ee3\u8868\u5305\u542b\u7b2c123\u7a9f\u3002",
-        "imageCaptions": [
-            "\u7b2c123\u7a9f\u7ae5\u7537\u7ae5\u5973\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "127",
-        "x": 8.2,
-        "y": 24.6,
-        "title": "\u7b2c127\u7a9f\uff5c\u58c1\u756b\u6700\u8c50\u5bcc\u7684\u6d1e\u7a9f",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u897f\u9b4f\u3002\u7b2c127\u7a9f\u662f\u9ea5\u7a4d\u5c71\u58c1\u756b\u6700\u8c50\u5bcc\u7684\u6d1e\u7a9f\u4e4b\u4e00\u3002\u666e\u7a9f\uff0f\u7279\u7a9f\u8cc7\u6599\u5c07\u5b83\u8207\u7b2c133\u3001135\u7a9f\u5217\u70ba\u6700\u9ad8\u7d1a\u5225\u7279\u7a9f\u3002\n\n\u88dc\u5145\uff1a\u897f\u9b4f\u6642\u671f\u8cc7\u6599\u6307\u51fa\uff0c\u7b2c127\u3001135\u7a9f\u4fdd\u5b58\u5927\u5e45\u7d93\u8b8a\u8207\u672c\u751f\u6545\u4e8b\u756b\uff0c\u5982\u6d85\u69c3\u8b8a\u3001\u897f\u65b9\u6de8\u571f\u8b8a\u3001\u7dad\u6469\u8a70\u8b8a\u3001\u5730\u7344\u8b8a\u3001\u7752\u5b50\u672c\u751f\u3001\u6368\u8eab\u98fc\u864e\u7b49\uff0c\u662f\u7406\u89e3\u5317\u671d\u7e6a\u756b\u85dd\u8853\u7684\u91cd\u8981\u8cc7\u6599\u3002",
-        "imageCaptions": [
-            "\u7b2c127\u7a9f\u58c1\u756b\u3002",
-            "\u7b2c127\u7a9f\u7d93\u8b8a\u8207\u672c\u751f\u6545\u4e8b\u756b\u3002"
-        ]
-    },
-    {
-        "id": "133",
-        "x": 18.6,
-        "y": 24.9,
-        "title": "\u7b2c133\u7a9f\uff5c\u842c\u4f5b\u6d1e\uff0f\u6771\u65b9\u5fae\u7b11",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u665a\u671f\uff0f\u5b8b\u4ee3\u91cd\u4fee\u91cd\u9ede\u3002\u7b2c133\u7a9f\u53c8\u7a31\u842c\u4f5b\u6d1e\uff0c\u662f\u9ea5\u7a4d\u5c71\u6700\u8457\u540d\u7684\u6d1e\u7a9f\u4e4b\u4e00\u3002\u91cd\u9ede\u5305\u62ec\u5c0f\u6c99\u5f4c\u300c\u6771\u65b9\u5fae\u7b11\u300d\u3001\u5b8b\u4ee3\u96d5\u5851\u7cbe\u54c1\u91cb\u8fe6\u6703\u5b50\u50cf\uff0c\u4ee5\u53ca\u570b\u5167\u552f\u4e00\u7684\u4f5b\u50b3\u6545\u4e8b\u7891\u3002\n\n\u88dc\u5145\uff1a\u5b8b\u4ee3\u8cc7\u6599\u4e2d\u7279\u5225\u63cf\u8ff0\u7b2c133\u7a9f\u91cb\u8fe6\u6703\u5b50\u50cf\uff0c\u4f5b\u9640\u5fae\u5fae\u524d\u50be\uff0c\u7f85\u777a\u7f85\u4f4e\u982d\u5408\u638c\uff0c\u5448\u73fe\u795e\u6027\u8207\u4eba\u6027\u7684\u5c0d\u7acb\u7d71\u4e00\u3002\n\n\u512a\u5148\u7d1a\uff1a\u6700\u9ad8\u3002",
-        "imageCaptions": [
-            "\u5c0f\u6c99\u5f4c\u300c\u6771\u65b9\u5fae\u7b11\u300d\u3002",
-            "\u7b2c133\u7a9f\u91cb\u8fe6\u6703\u5b50\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "135",
-        "x": 36.0,
-        "y": 24.0,
-        "title": "\u7b2c135\u7a9f\uff5c\u5929\u5802\u6d1e",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u897f\u9b4f\u3002\u7b2c135\u7a9f\u53c8\u7a31\u300c\u5929\u5802\u6d1e\u300d\uff0c\u7279\u9ede\u662f\u7a9f\u9580\u4e0a\u90e8\u6709\u4e09\u500b\u300c\u54c1\u300d\u5b57\u5f62\u65b9\u6d1e\u4f5c\u70ba\u660e\u7a97\u3002\n\n\u88dc\u5145\uff1a\u897f\u9b4f\u6642\u671f\u7b2c135\u7a9f\u8207\u7b2c127\u7a9f\u540c\u6a23\u4fdd\u5b58\u5927\u578b\u7d93\u8b8a\u8207\u672c\u751f\u6545\u4e8b\u756b\uff0c\u662f\u5317\u671d\u7e6a\u756b\u85dd\u8853\u7684\u91cd\u8981\u8cc7\u6599\u3002",
-        "imageCaptions": [
-            "\u7b2c135\u7a9f\u5929\u5802\u6d1e\u3002"
-        ]
-    },
-    {
-        "id": "141",
-        "x": 22.8,
-        "y": 38.8,
-        "title": "\u7b2c141\u7a9f\uff5c\u6b63\u58c1\u9f95\u5167\u4f5b\u50cf",
-        "note": "\u5206\u985e\uff1a\u5317\u5468\u5f69\u5851\u8cc7\u6599\u3002\u7b2c141\u7a9f\u8cc7\u6599\u4e2d\u660e\u78ba\u6a19\u8a3b\u70ba\u300c\u6b63\u58c1\u9f95\u5167\u4f5b\u50cf\u300d\u3002\u9019\u4e00\u7b46\u6709\u660e\u78ba\u6d1e\u7a9f\u865f\uff0c\u56e0\u6b64\u6b78\u5165\u6d1e\u7a9f\u8cc7\u6599\u3002\n\n\u4f4d\u7f6e\uff1a\u76ee\u524d\u5ea7\u6a19\u70ba\u66ab\u5b9a\uff0c\u9700\u4f9d\u5c0e\u89bd\u5716\u5be6\u969b\u5c0f\u865f\u78bc\u518d\u5fae\u8abf\u3002",
-        "imageCaptions": [
-            "\u7b2c141\u7a9f\u6b63\u58c1\u9f95\u5167\u4f5b\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "142",
-        "x": 19.8,
-        "y": 36.3,
-        "title": "\u7b2c142\u7a9f\uff5c\u6bcd\u5b50\u4f9b\u990a\u4eba\u50cf",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u665a\u671f\u3002\u7b2c142\u7a9f\u4ee5\u6bcd\u5b50\u4f9b\u990a\u4eba\u50cf\u8457\u540d\u3002\n\n\u88dc\u5145\uff1a\u5317\u9b4f\u665a\u671f\u4ee3\u8868\u7a9f\u9f95\u5305\u62ec\u7b2c142\u7a9f\u3002",
-        "imageCaptions": [
-            "\u7b2c142\u7a9f\u6bcd\u5b50\u4f9b\u990a\u4eba\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "147",
-        "x": 26.2,
-        "y": 36.1,
-        "title": "\u7b2c147\u7a9f\uff5c\u897f\u9b4f\u87ba\u9afb\u4f5b\u50cf",
-        "note": "\u5206\u985e\uff1a\u666e\u7a9f\u3001\u897f\u9b4f\uff0f\u5317\u671d\u91cd\u9ede\u3002\u7b2c147\u7a9f\u4fdd\u5b58\u897f\u9b4f\u87ba\u9afb\u4f5b\u50cf\uff0c\u4e94\u5b98\u6e05\u79c0\uff0c\u662f\u9ea5\u7a4d\u5c71\u5317\u671d\u9020\u50cf\u4e2d\u5f88\u7279\u5225\u7684\u4e00\u5c0a\u3002\n\n\u88dc\u5145\uff1a\u53e6\u4e00\u4efd\u8cc7\u6599\u63d0\u5230\u7b2c147\u7a9f\u5750\u4f5b\u7d50\u8dcf\u8dba\u5750\u65bc\u65b9\u5f62\u53f0\u5ea7\uff0c\u8863\u7d0b\u7e41\u8907\u7cbe\u7dfb\uff0c\u53f3\u817f\u8888\u88df\u8863\u8936\u5982\u84ee\u82b1\u74e3\u5f62\uff0c\u662f\u5317\u671d\u300c\u61f8\u88f3\u5ea7\u300d\u7684\u91cd\u8981\u4f8b\u5b50\u3002",
-        "imageCaptions": [
-            "\u7b2c147\u7a9f\u897f\u9b4f\u87ba\u9afb\u4f5b\u50cf\u3002",
-            "\u7b2c147\u7a9f\u5750\u4f5b\u61f8\u88f3\u5ea7\u7d30\u7bc0\u3002"
-        ]
-    },
-    {
-        "id": "155",
-        "x": 30.4,
-        "y": 41.8,
-        "title": "\u7b2c155\u7a9f\uff5c\u6700\u65e9\u5f1f\u5b50\u50cf",
-        "note": "\u5206\u985e\uff1a\u7279\u7a9f\u3001\u5317\u9b4f\u4e2d\u671f\u3002\u7b2c155\u7a9f\u88ab\u5217\u70ba\u7279\u7a9f\uff0c\u91cd\u9ede\u662f\u9ea5\u7a4d\u5c71\u6700\u65e9\u5f1f\u5b50\u50cf\u3002\n\n\u88dc\u5145\uff1a\u5317\u9b4f\u4e2d\u671f\u4ee3\u8868\u6d1e\u7a9f\u5305\u62ec\u7b2c155\u7a9f\u3002\u5317\u9b4f\u4e2d\u671f\u9020\u50cf\u984c\u6750\u9664\u4e09\u4f5b\u5916\uff0c\u958b\u59cb\u51fa\u73fe\u5f1f\u5b50\u50cf\uff0c\u4e5f\u6709\u5927\u91cf\u5f71\u5851\u4f5b\u3001\u83e9\u85a9\u3001\u5f1f\u5b50\u3001\u5929\u4eba\u3001\u98db\u5929\u8207\u4f9b\u990a\u4eba\u3002",
-        "imageCaptions": [
-            "\u7b2c155\u7a9f\u6700\u65e9\u5f1f\u5b50\u50cf\u3002"
-        ]
-    },
-    {
-        "id": "165",
-        "x": 10.3,
-        "y": 39.2,
-        "title": "\u7b2c165\u7a9f\uff5c\u65e9\u671f\uff0f\u5b8b\u5851\u88dc\u4fee\u91cd\u9ede",
-        "note": "\u5206\u985e\uff1a\u5317\u9b4f\u65e9\u671f\u3001\u5b8b\u4ee3\u91cd\u4fee\u3002\u7b2c165\u7a9f\u5728\u65e9\u671f\u6d1e\u7a9f\u8cc7\u6599\u4e2d\u8207\u7b2c74\u300178\u300190\u3001100\u3001128\u7b49\u4e26\u5217\uff0c\u5c6c\u5317\u9b4f\u65e9\u671f\u4ee3\u8868\u4e4b\u4e00\u3002\u5b8b\u4ee3\u8cc7\u6599\u4e5f\u63d0\u5230\u7b2c165\u7a9f\u6709\u5b8b\u5851\u4f73\u4f5c\uff0c\u6bd4\u4f8b\u52fb\u7a31\u3002",
-        "imageCaptions": [
-            "\u7b2c165\u7a9f\u65e9\u671f\u9020\u50cf\u8207\u5b8b\u4ee3\u88dc\u4fee\u7dda\u7d22\u3002"
-        ]
-    }
+  {
+    "id": "3",
+    "x": 76.1,
+    "y": 18.1,
+    "title": "第3窟｜千佛廊",
+    "note": "第3窟又稱千佛廊，是麥積山普窟中的重點洞窟。洞內保存大量佛像，特色在於連續排列的群像效果，可觀察每尊佛像神情、姿態與排列節奏。\n\n參考圖片說明：第3窟千佛廊佛像群像。",
+    "imageCaptions": [
+      "第3窟千佛廊佛像群像。"
+    ]
+  },
+  {
+    "id": "4",
+    "x": 66.4,
+    "y": 8.9,
+    "title": "第4窟｜上七佛閣／散花樓",
+    "note": "第4窟又稱上七佛閣、散花樓，是麥積山規模大、位置高的重要崖閣式洞窟。北周原作壁畫與薄肉塑飛天是最值得看的重點，藝術水準很高。\n\n參考圖片說明：第4窟第三龕右壁內側脅侍菩薩立像手部；第4窟窟左端金剛力士像頭部；第4窟第四龕外上方薄肉塑飛天。",
+    "imageCaptions": [
+      "第4窟第三龕右壁內側脅侍菩薩立像手部。",
+      "第4窟窟左端金剛力士像頭部，仰視局部。",
+      "第4窟第四龕外上方薄肉塑飛天。"
+    ]
+  },
+  {
+    "id": "5",
+    "x": 53.8,
+    "y": 19.3,
+    "title": "第5窟｜牛兒堂",
+    "note": "第5窟又稱牛兒堂，主尊為倚坐佛，是現存少見的唐代造像之一。前廊的「踏牛天王」也值得留意。\n\n參考圖片說明：第5窟外廊左龕三世佛、倚坐彌勒佛和脅侍菩薩像；第5窟中龕本尊釋迦牟尼坐像局部。",
+    "imageCaptions": [
+      "第5窟外廊左龕，三世佛、倚坐彌勒佛和脅侍菩薩像。",
+      "第5窟中龕本尊釋迦牟尼坐像局部。"
+    ]
+  },
+  {
+    "id": "9",
+    "x": 73.8,
+    "y": 36.1,
+    "title": "第9窟｜中七佛閣",
+    "note": "第9窟又稱中七佛閣，有七個佛龕，每龕有一佛二菩薩。第四龕頂部有雙頭童子像，也就是共命鳥，帶有「害人終害己」的故事寓意。\n\n參考圖片說明：第9窟中七佛閣。",
+    "imageCaptions": [
+      "第9窟中七佛閣。"
+    ]
+  },
+  {
+    "id": "13",
+    "x": 56.2,
+    "y": 37.0,
+    "title": "第13窟｜東崖大佛",
+    "note": "第13窟是東崖大佛，也是麥積山最大的造像之一。主尊為阿彌陀佛，左右為觀世音菩薩與大勢至菩薩，氣勢宏偉。\n\n參考圖片說明：第13窟西方三聖，中為阿彌陀佛，左為大勢至菩薩，右為觀世音菩薩。",
+    "imageCaptions": [
+      "第13窟西方三聖，中為阿彌陀佛，左為大勢至菩薩，右為觀世音菩薩。"
+    ]
+  },
+  {
+    "id": "14",
+    "x": 54.0,
+    "y": 31.2,
+    "title": "第14窟｜左脅侍菩薩和金剛力士像",
+    "note": "第14窟的重點是左脅侍菩薩和金剛力士像。可留意人物姿態、護法形象與隋代造像由簡潔走向圓雕感的特色。\n\n參考圖片說明：第14窟左脅侍菩薩和金剛力士像。",
+    "imageCaptions": [
+      "第14窟左脅侍菩薩和金剛力士像。"
+    ]
+  },
+  {
+    "id": "15",
+    "x": 50.0,
+    "y": 30.5,
+    "title": "第15窟｜正壁坐佛左尊頭部",
+    "note": "第15窟保存宋代修、明代妝的彩塑資料。重點可看正壁坐佛左尊頭部，觀察後世重修後的面相、妝彩與保存狀態。\n\n參考圖片說明：第15窟正壁坐佛左尊頭部。",
+    "imageCaptions": [
+      "第15窟正壁坐佛左尊頭部。"
+    ]
+  },
+  {
+    "id": "26",
+    "x": 47.0,
+    "y": 24.8,
+    "title": "第26窟｜右脅侍菩薩和供養比丘像",
+    "note": "第26窟屬北周窟，後有隋、唐代塑與宋代修補。重點是右脅侍菩薩和供養比丘像，可觀察不同時期修塑痕跡與人物配置。\n\n參考圖片說明：第26窟右脅侍菩薩和供養比丘像。",
+    "imageCaptions": [
+      "第26窟右脅侍菩薩和供養比丘像。"
+    ]
+  },
+  {
+    "id": "43",
+    "x": 52.2,
+    "y": 48.4,
+    "title": "第43窟｜乙弗皇后墓",
+    "note": "第43窟與乙弗皇后墓相關，是西魏時期的重要洞窟。西魏時期麥積山出現仿殿堂式崖閣的新潮流，與皇室背景和宗教活動有密切關係。\n\n參考圖片說明：第43窟乙弗皇后墓相關洞窟。",
+    "imageCaptions": [
+      "第43窟乙弗皇后墓相關洞窟。"
+    ]
+  },
+  {
+    "id": "44",
+    "x": 43.4,
+    "y": 51.8,
+    "title": "第44窟｜阿彌陀佛的微笑",
+    "note": "第44窟是麥積山最重要的西魏彩繪泥塑之一。主尊阿彌陀如來微笑安詳，被稱為「東方的蒙娜麗莎」。佛面方圓，眉目清秀，俯視含笑，神態慈悲安詳。\n\n參考圖片說明：第44窟西魏彩繪泥塑阿彌陀如來；阿彌陀佛的微笑。",
+    "imageCaptions": [
+      "第44窟西魏彩繪泥塑阿彌陀如來。",
+      "阿彌陀佛的微笑／東方的蒙娜麗莎。"
+    ]
+  },
+  {
+    "id": "45",
+    "x": 24.6,
+    "y": 51.9,
+    "title": "第45窟｜北周時代佛像",
+    "note": "第45窟可作為北周時期造像風格的觀察點。可與北魏、西魏洞窟比較，觀察人物面相與衣紋由清瘦走向較圓潤自然的變化。\n\n參考圖片說明：第45窟北周時代佛像。",
+    "imageCaptions": [
+      "第45窟北周時代佛像。"
+    ]
+  },
+  {
+    "id": "62",
+    "x": 37.4,
+    "y": 55.6,
+    "title": "第62窟｜保存最好的北周佛窟",
+    "note": "第62窟是北周重要洞窟，被視為保存狀態很好的北周佛窟。可觀察北周造像較飽滿、渾圓的身體比例，以及主尊如來坐像的莊嚴感。\n\n參考圖片說明：第62窟右龕本尊如來坐像；第62窟右龕本尊如來坐像正面。",
+    "imageCaptions": [
+      "第62窟右龕本尊如來坐像。",
+      "第62窟右龕本尊如來坐像正面。"
+    ]
+  },
+  {
+    "id": "70",
+    "x": 35.0,
+    "y": 62.0,
+    "title": "第70窟｜本尊如來坐像和脅侍菩薩立像",
+    "note": "第70窟屬北魏早期彩塑。重點是本尊如來坐像和脅侍菩薩立像，可觀察早期佛像形體敦厚、神情莊嚴、衣著簡潔的特色。\n\n參考圖片說明：第70窟本尊如來坐像和脅侍菩薩立像。",
+    "imageCaptions": [
+      "第70窟本尊如來坐像和脅侍菩薩立像。"
+    ]
+  },
+  {
+    "id": "74",
+    "x": 38.4,
+    "y": 66.4,
+    "title": "第74窟｜麥積山現存最早造像之一",
+    "note": "第74窟是麥積山現存最早造像之一，屬北魏早期代表洞窟。可與第78窟一起看，觀察早期石窟形制與造像配置。\n\n參考圖片說明：第74窟右壁如來坐像頭部。",
+    "imageCaptions": [
+      "第74窟右壁如來坐像頭部。"
+    ]
+  },
+  {
+    "id": "76",
+    "x": 8.8,
+    "y": 56.0,
+    "title": "第76窟｜完整飛天藻井",
+    "note": "第76窟以飛天藻井聞名，是麥積山非常值得看的北魏中期洞窟。可留意藻井構圖、飛天姿態與色彩保存。\n\n參考圖片說明：第76窟飛天藻井。",
+    "imageCaptions": [
+      "第76窟飛天藻井。"
+    ]
+  },
+  {
+    "id": "78",
+    "x": 13.0,
+    "y": 50.4,
+    "title": "第78窟｜早期北魏洞窟",
+    "note": "第78窟是北魏早期代表洞窟之一。洞窟形制古樸，正壁和左右壁下部有佛壇，壇上造像身軀雄健，可與第74窟對照觀看。\n\n參考圖片說明：第78窟正壁主佛。",
+    "imageCaptions": [
+      "第78窟正壁主佛。"
+    ]
+  },
+  {
+    "id": "80",
+    "x": 30.2,
+    "y": 50.5,
+    "title": "第80窟｜石窟觀察點",
+    "note": "第80窟可作為現場參觀與筆記入口。可補充現場說明牌、實拍照片與同行觀察。\n\n參考圖片說明：第80窟現場補充照片。",
+    "imageCaptions": [
+      "第80窟現場補充照片。"
+    ]
+  },
+  {
+    "id": "81",
+    "x": 32.8,
+    "y": 52.8,
+    "title": "第81窟｜正龕本尊如來坐像",
+    "note": "第81窟屬北魏彩塑。重點是正龕本尊如來坐像，可觀察北魏後期造像清秀、端正的面相與坐佛姿態。\n\n參考圖片說明：第81窟正龕本尊如來坐像。",
+    "imageCaptions": [
+      "第81窟正龕本尊如來坐像。"
+    ]
+  },
+  {
+    "id": "85",
+    "x": 34.8,
+    "y": 50.8,
+    "title": "第85窟｜左脅侍菩薩和阿難弟子立像",
+    "note": "第85窟屬北魏彩塑。重點是左脅侍菩薩和阿難弟子立像，可觀察菩薩與弟子在身形、服飾與神情上的差異。\n\n參考圖片說明：第85窟左脅侍菩薩和阿難弟子立像。",
+    "imageCaptions": [
+      "第85窟左脅侍菩薩和阿難弟子立像。"
+    ]
+  },
+  {
+    "id": "87",
+    "x": 36.8,
+    "y": 48.8,
+    "title": "第87窟｜正壁右側脅侍菩薩立像局部",
+    "note": "第87窟屬北魏彩塑。重點是正壁右側脅侍菩薩立像局部，可細看菩薩身形、衣紋與局部雕塑細節。\n\n參考圖片說明：第87窟正壁右側脅侍菩薩立像局部。",
+    "imageCaptions": [
+      "第87窟正壁右側脅侍菩薩立像局部。"
+    ]
+  },
+  {
+    "id": "98",
+    "x": 31.5,
+    "y": 45.0,
+    "title": "第98窟｜西崖大佛",
+    "note": "第98窟為西崖大佛。可與第13窟東崖大佛對照，一東一西看麥積山大型造像的氣勢與位置。\n\n參考圖片說明：第98窟西崖大佛。",
+    "imageCaptions": [
+      "第98窟西崖大佛。"
+    ]
+  },
+  {
+    "id": "100",
+    "x": 30.8,
+    "y": 34.0,
+    "title": "第100窟｜西魏菩薩殘件",
+    "note": "第100窟保存西魏菩薩殘件相關資料。其一為菩薩坐像殘件，現存第102窟；其二為菩薩立像殘件。可作為西魏造像清俊、衣著自然流暢的觀察點。\n\n參考圖片說明：第100窟菩薩坐像殘件，現存第102窟；第100窟菩薩立像殘件。",
+    "imageCaptions": [
+      "第100窟菩薩坐像殘件，現存第102窟，年代為西魏。",
+      "第100窟菩薩立像殘件。"
+    ]
+  },
+  {
+    "id": "102",
+    "x": 29.8,
+    "y": 27.0,
+    "title": "第102窟｜在家菩薩維摩詰",
+    "note": "第102窟是西魏重要洞窟，重點是在家菩薩維摩詰題材。另有第100窟菩薩坐像殘件現存於第102窟，可作為交叉參照。\n\n參考圖片說明：第100窟菩薩坐像殘件，現存第102窟。",
+    "imageCaptions": [
+      "第100窟菩薩坐像殘件，現存第102窟，年代為西魏。"
+    ]
+  },
+  {
+    "id": "115",
+    "x": 36.1,
+    "y": 28.6,
+    "title": "第115窟｜唯一有造像紀年的洞窟",
+    "note": "第115窟保存「大代景明三年」長篇發願文，是判定北魏晚期洞窟年代的重要依據，也是麥積山很重要的紀年洞窟。\n\n參考圖片說明：第115窟正壁主佛和左壁立菩薩。",
+    "imageCaptions": [
+      "第115窟正壁主佛和左壁立菩薩。"
+    ]
+  },
+  {
+    "id": "117",
+    "x": 37.9,
+    "y": 28.9,
+    "title": "第117窟｜造像觀察點",
+    "note": "第117窟可與第115窟附近洞窟一起看，觀察鄰近洞窟的位置、造像配置與風格差異。\n\n參考圖片說明：第117窟現場補充照片。",
+    "imageCaptions": [
+      "第117窟現場補充照片。"
+    ]
+  },
+  {
+    "id": "120",
+    "x": 25.5,
+    "y": 30.8,
+    "title": "第120窟｜本尊釋迦如來坐像局部",
+    "note": "第120窟屬西魏彩塑。重點是本尊釋迦如來坐像局部，可觀察西魏造像自然清圓、衣著褒衣博帶或交領儒袍的風格。\n\n參考圖片說明：第120窟本尊釋迦如來坐像局部。",
+    "imageCaptions": [
+      "第120窟本尊釋迦如來坐像局部。"
+    ]
+  },
+  {
+    "id": "121",
+    "x": 22.5,
+    "y": 28.0,
+    "title": "第121窟｜竊竊私語像",
+    "note": "第121窟以「竊竊私語像」著名。菩薩與弟子靠近低語，神態親切自然，是麥積山佛教造像中極具生活氣息的一組雕塑。\n\n參考圖片說明：第121窟竊竊私語像。",
+    "imageCaptions": [
+      "第121窟竊竊私語像。"
+    ]
+  },
+  {
+    "id": "123",
+    "x": 24.2,
+    "y": 87.4,
+    "title": "第123窟｜童男童女像",
+    "note": "第123窟以童男童女像著名，形象天真、稚氣，是西魏時期人物塑造中很有生活感的作品。\n\n參考圖片說明：第123窟童男童女像。",
+    "imageCaptions": [
+      "第123窟童男童女像。"
+    ]
+  },
+  {
+    "id": "127",
+    "x": 8.2,
+    "y": 24.6,
+    "title": "第127窟｜壁畫最豐富的洞窟",
+    "note": "第127窟是麥積山壁畫最豐富的洞窟之一，保存經變與本生故事畫，是理解北朝繪畫藝術的重要洞窟。\n\n參考圖片說明：第127窟壁畫；第127窟經變與本生故事畫。",
+    "imageCaptions": [
+      "第127窟壁畫。",
+      "第127窟經變與本生故事畫。"
+    ]
+  },
+  {
+    "id": "133",
+    "x": 18.6,
+    "y": 24.9,
+    "title": "第133窟｜萬佛洞／東方微笑",
+    "note": "第133窟又稱萬佛洞，是麥積山最著名的洞窟之一。重點包括小沙彌「東方微笑」、宋代雕塑精品釋迦會子像，以及佛傳故事碑。\n\n參考圖片說明：小沙彌「東方微笑」；第133窟釋迦會子像。",
+    "imageCaptions": [
+      "小沙彌「東方微笑」。",
+      "第133窟釋迦會子像。"
+    ]
+  },
+  {
+    "id": "135",
+    "x": 36.0,
+    "y": 24.0,
+    "title": "第135窟｜天堂洞",
+    "note": "第135窟又稱天堂洞，窟門上方有三個呈「品」字形排列的方洞作為明窗。第135窟保存大型經變與本生故事畫，是西魏時期重要洞窟。\n\n參考圖片說明：第135窟天堂洞。",
+    "imageCaptions": [
+      "第135窟天堂洞。"
+    ]
+  },
+  {
+    "id": "141",
+    "x": 22.8,
+    "y": 38.8,
+    "title": "第141窟｜正壁龕內佛像",
+    "note": "第141窟屬北周彩塑。重點是正壁龕內佛像，可觀察北周造像由西魏清秀感轉向飽滿渾圓的變化。\n\n參考圖片說明：第141窟正壁龕內佛像。",
+    "imageCaptions": [
+      "第141窟正壁龕內佛像。"
+    ]
+  },
+  {
+    "id": "142",
+    "x": 19.8,
+    "y": 36.3,
+    "title": "第142窟｜母子供養人像",
+    "note": "第142窟以母子供養人像著名。這組形象帶有濃厚生活氣息，也可看到當時服飾與族群文化交流的線索。\n\n參考圖片說明：第142窟母子供養人像。",
+    "imageCaptions": [
+      "第142窟母子供養人像。"
+    ]
+  },
+  {
+    "id": "147",
+    "x": 26.2,
+    "y": 36.1,
+    "title": "第147窟｜西魏螺髻佛像",
+    "note": "第147窟保存西魏螺髻佛像，五官清秀，是麥積山北朝造像中很特別的一尊。坐佛衣紋繁複，懸裳座細節值得細看。\n\n參考圖片說明：第147窟西魏螺髻佛像；第147窟坐佛懸裳座細節。",
+    "imageCaptions": [
+      "第147窟西魏螺髻佛像。",
+      "第147窟坐佛懸裳座細節。"
+    ]
+  },
+  {
+    "id": "155",
+    "x": 30.4,
+    "y": 41.8,
+    "title": "第155窟｜最早弟子像",
+    "note": "第155窟是北魏中期重要洞窟，重點是麥積山最早弟子像。北魏中期造像題材逐漸豐富，開始出現弟子像與更多影塑人物。\n\n參考圖片說明：第155窟最早弟子像。",
+    "imageCaptions": [
+      "第155窟最早弟子像。"
+    ]
+  },
+  {
+    "id": "165",
+    "x": 10.3,
+    "y": 39.2,
+    "title": "第165窟｜早期造像與宋代補修線索",
+    "note": "第165窟是北魏早期代表洞窟之一，也有宋代補修線索。可觀察早期造像與後世修補之間的差異。\n\n參考圖片說明：第165窟早期造像與宋代補修線索。",
+    "imageCaptions": [
+      "第165窟早期造像與宋代補修線索。"
+    ]
+  }
 ]
