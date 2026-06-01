@@ -58,3 +58,14 @@ x/y 是百分比座標。
 - Hotspot coordinates are converted from each legacy image container's local `left:%; top:%` into one global stitched-map percentage system.
 - `assets/coordinate-debug.jpg` is included as a visual proof image with labels baked onto the stitched map.
 - Important: the uploaded legacy file contains 36 inline hotspots, not 131. To restore 131 labels, provide the full 131-coordinate source file.
+
+
+## V18.3 已補橘色標籤資料
+
+本包已從使用者上傳的舊 `index.html` 解析：
+
+- 10 張內嵌全景分段圖 → `assets/mogao-map.jpg`
+- 36 個橘色標籤座標 → `data/cave-coordinates.json`
+- 36 筆橘色標籤詳細資料（title / subtitle / note / desc / isSpecial）→ `data/cave-coordinates.json`
+
+目前這份舊檔可解析到 36 個洞窟；若要 131 個，需要再提供含 131 筆 button 座標與 orangeNotesData 的完整舊 HTML 或 JSON。
