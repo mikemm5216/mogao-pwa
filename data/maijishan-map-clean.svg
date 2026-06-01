@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1200" role="img" aria-label="麥積山石窟乾淨底圖，無洞窟號與橘色標籤">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#243447"/>
+      <stop offset="0.46" stop-color="#4e5f68"/>
+      <stop offset="1" stop-color="#b58b5b"/>
+    </linearGradient>
+    <linearGradient id="cliff" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#b86f2d"/>
+      <stop offset="0.38" stop-color="#8e4e20"/>
+      <stop offset="0.68" stop-color="#6b3619"/>
+      <stop offset="1" stop-color="#3b2115"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#d08a3d"/>
+      <stop offset="0.45" stop-color="#9b5526"/>
+      <stop offset="1" stop-color="#432416"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur"/>
+      <feOffset dy="8" result="off"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="5" seed="7"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feBlend mode="multiply" in2="SourceGraphic"/>
+    </filter>
+    <pattern id="smallCaves" width="120" height="90" patternUnits="userSpaceOnUse">
+      <ellipse cx="38" cy="28" rx="14" ry="10" fill="#21130c" opacity="0.48"/>
+      <ellipse cx="82" cy="58" rx="11" ry="8" fill="#28160e" opacity="0.38"/>
+    </pattern>
+  </defs>
+
+  <rect width="1800" height="1200" fill="url(#sky)"/>
+  <path d="M0 940 C210 820 320 870 520 770 C760 650 920 690 1090 570 C1280 438 1510 432 1800 345 L1800 1200 L0 1200 Z" fill="#16251f" opacity="0.55"/>
+  <path d="M0 1015 C250 900 410 928 650 820 C910 704 1110 742 1340 610 C1510 512 1660 502 1800 458 L1800 1200 L0 1200 Z" fill="#1c2d22" opacity="0.72"/>
+
+  <g filter="url(#soft)">
+    <path d="M270 150 C390 75 510 112 610 72 C720 28 860 76 940 132 C1012 183 1115 176 1220 232 C1350 302 1450 400 1508 548 C1570 706 1530 850 1424 982 C1290 1149 1030 1185 814 1118 C648 1066 508 1102 388 1018 C246 920 178 760 206 596 C232 436 164 262 270 150 Z" fill="url(#cliff)"/>
+    <path d="M420 168 C548 104 718 114 844 186 C1010 282 1110 258 1254 420 C1388 570 1380 840 1220 1004 C1090 1138 834 1114 660 1032 C496 954 378 1018 300 866 C220 706 270 456 334 316 C358 262 370 198 420 168 Z" fill="url(#face)" opacity="0.93" filter="url(#grain)"/>
+  </g>
+
+  <path d="M408 218 C480 190 572 198 640 236 C502 255 420 315 338 410 C352 320 362 256 408 218 Z" fill="#f2b65c" opacity="0.3"/>
+  <path d="M1040 264 C1190 360 1306 496 1346 666 C1244 584 1136 558 1000 570 C1062 474 1082 370 1040 264 Z" fill="#f5b55b" opacity="0.23"/>
+  <path d="M430 850 C660 916 902 900 1194 820" stroke="#e6a356" stroke-width="16" stroke-linecap="round" opacity="0.22" fill="none"/>
+  <path d="M322 650 C540 602 768 620 1000 568 C1130 536 1248 552 1368 610" stroke="#ffc06e" stroke-width="10" stroke-linecap="round" opacity="0.2" fill="none"/>
+
+  <g opacity="0.55">
+    <rect x="300" y="280" width="1040" height="690" fill="url(#smallCaves)" opacity="0.62"/>
+    <ellipse cx="560" cy="238" rx="20" ry="12" fill="#1e100b" opacity="0.52"/>
+    <ellipse cx="725" cy="205" rx="18" ry="10" fill="#2a160d" opacity="0.48"/>
+    <ellipse cx="890" cy="240" rx="24" ry="13" fill="#21120b" opacity="0.45"/>
+    <ellipse cx="1080" cy="340" rx="18" ry="11" fill="#26140c" opacity="0.48"/>
+    <ellipse cx="1190" cy="480" rx="22" ry="13" fill="#1f110c" opacity="0.5"/>
+    <ellipse cx="1040" cy="735" rx="20" ry="12" fill="#24130c" opacity="0.52"/>
+    <ellipse cx="780" cy="820" rx="25" ry="13" fill="#1f100a" opacity="0.48"/>
+    <ellipse cx="590" cy="690" rx="18" ry="10" fill="#28150d" opacity="0.5"/>
+    <ellipse cx="440" cy="520" rx="21" ry="12" fill="#1f100b" opacity="0.48"/>
+  </g>
+
+  <g opacity="0.5" stroke="#f6c177" stroke-width="5" fill="none" stroke-linecap="round">
+    <path d="M358 374 C512 356 612 340 734 364"/>
+    <path d="M322 535 C520 498 704 512 920 486 C1084 466 1190 486 1324 548"/>
+    <path d="M330 710 C544 720 750 698 944 676 C1110 657 1232 690 1342 752"/>
+    <path d="M410 902 C620 942 864 932 1130 882"/>
+  </g>
+
+  <g opacity="0.38" stroke="#1b120c" stroke-width="3" fill="none">
+    <path d="M508 160 C452 322 424 512 380 1010"/>
+    <path d="M708 120 C680 330 638 590 662 1060"/>
+    <path d="M910 175 C840 420 862 680 820 1086"/>
+    <path d="M1122 290 C1080 468 1110 716 1068 1034"/>
+    <path d="M1294 442 C1282 624 1230 790 1190 942"/>
+  </g>
+
+  <path d="M250 1092 C530 1040 758 1065 952 1114 C1180 1170 1448 1120 1800 1058 L1800 1200 L0 1200 L0 1124 C92 1112 174 1104 250 1092 Z" fill="#201610" opacity="0.92"/>
+  <path d="M0 1148 C288 1082 610 1108 850 1148 C1108 1191 1414 1134 1800 1088 L1800 1200 L0 1200 Z" fill="#0f0b08" opacity="0.55"/>
+</svg>
