@@ -25,84 +25,91 @@
   const $ = id => document.getElementById(id);
   const norm = value => String(value || '').replace(/[^0-9]/g, '');
   const parse = (raw, fallback) => {
-    try {
-      return raw ? JSON.parse(raw) : fallback;
-    } catch {
-      return fallback;
-    }
+    try { return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
   };
   const esc = value => String(value || '').replace(/[&<>"']/g, char => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[char]));
 
   const tm = () => parse(localStorage.getItem(T), {});
   const im = () => parse(localStorage.getItem(I), {});
 
-  function trans() {
-    $('stage').style.transform = `translate3d(${px}px,${py}px,0) scale(${scale})`;
-  }
-
-  function reset() {
-    scale = 1.25;
-    px = 8;
-    py = 6;
-    trans();
-  }
-
-  function status(message) {
-    $('status').textContent = message || '';
-  }
-
-  function findNote(id) {
-    return noteCaves.find(cave => String(cave.id) === id);
-  }
-
+  function trans() { $('stage').style.transform = `translate3d(${px}px,${py}px,0) scale(${scale})`; }
+  function reset() { scale = 1.25; px = 8; py = 6; trans(); }
+  function status(message) { $('status').textContent = message || ''; }
+  function findNote(id) { return noteCaves.find(cave => String(cave.id) === id); }
   function imageSrc(src) {
     const value = String(src || '');
     return value.startsWith('/images/maijishan/') ? `/public${value}` : value;
   }
-
+  function cleanImageForSave(image) {
+    return { src: String(image && image.src || ''), caption: String(image && image.caption || '') };
+  }
   function photoFigure(image) {
     return `<figure class="photo"><img loading="lazy" src="${esc(imageSrc(image.src))}" alt="${esc(image.caption || '')}">${image.caption ? `<figcaption>${esc(image.caption)}</figcaption>` : ''}</figure>`;
+  }
+
+  function renderImageEditor(cave) {
+    const box = $('sharedImagesEditor');
+    if (!box) return;
+    const images = Array.isArray(cave.images) ? cave.images : [];
+    box.innerHTML = images.length ? images.map((image, index) => `
+      <div class="imageEditRow" data-index="${index}">
+        <img src="${esc(imageSrc(image.src))}" alt="${esc(image.caption || '')}">
+        <label>圖片說明</label>
+        <textarea class="imageCaptionInput" rows="2">${esc(image.caption || '')}</textarea>
+        <button type="button" class="secondary removeImageBtn">移除這張圖片</button>
+      </div>
+    `).join('') : '<p class="muted">目前沒有共用圖片。</p>';
+    box.querySelectorAll('.removeImageBtn').forEach(button => {
+      button.onclick = event => {
+        const row = event.target.closest('.imageEditRow');
+        if (row) row.remove();
+      };
+    });
+  }
+
+  function collectEditedImages() {
+    const box = $('sharedImagesEditor');
+    if (!box) return [];
+    return [...box.querySelectorAll('.imageEditRow')].map(row => ({
+      src: row.dataset.src || (findNote(cur)?.images?.[Number(row.dataset.index)]?.src || ''),
+      caption: row.querySelector('.imageCaptionInput')?.value || ''
+    })).filter(image => image.src);
   }
 
   function openCave(id) {
     id = norm(id);
     cur = id;
-
-    const cave = findNote(id) || {
-      id,
-      title: `${id} 窟`,
-      note: '這個洞窟目前沒有內建筆記。可用「新增筆記」補資料。'
-    };
-
+    const cave = findNote(id) || { id, title: `${id} 窟`, note: '這個洞窟目前沒有內建筆記。可用「新增筆記」補資料。', images: [] };
     $('modalTitle').textContent = `${cave.title || `${id} 窟`} 筆記`;
     $('info').textContent = cave.note || '這個洞窟目前沒有內建筆記。';
     $('textView').textContent = tm()[id] || '尚無自訂文字筆記。';
-
     const builtInPhotos = Array.isArray(cave.images) ? cave.images : [];
     const uploadedPhotos = Array.isArray(im()[id]) ? im()[id] : [];
-    const photosHtml = [
-      ...builtInPhotos.map(photoFigure),
-      ...uploadedPhotos.map(photoFigure)
-    ].join('');
-
+    const photosHtml = [...builtInPhotos.map(photoFigure), ...uploadedPhotos.map(photoFigure)].join('');
     $('photos').innerHTML = photosHtml || '<p class="muted">尚無照片。</p>';
     $('modal').style.display = 'flex';
+  }
+
+  function openPanelForCave(id) {
+    id = norm(id);
+    cur = id;
+    const cave = findNote(id) || { id, title: `${id} 窟`, note: '', images: [] };
+    $('panel').style.display = 'flex';
+    $('caveInput').value = id;
+    $('sharedTitleInput').value = cave.title || `${id} 窟`;
+    $('sharedNoteInput').value = cave.note || '';
+    $('textInput').value = tm()[id] || '';
+    renderImageEditor(cave);
+    status('');
   }
 
   function drawNumber(cave) {
     const nums = $('numbers');
     if (!nums) return;
-    const id = norm(cave.id);
-    const x = Number(cave.x);
-    const y = Number(cave.y);
+    const id = norm(cave.id), x = Number(cave.x), y = Number(cave.y);
     if (!id || !isFinite(x) || !isFinite(y)) return;
-
     const label = document.createElement('span');
     label.className = 'num';
     label.textContent = id;
@@ -113,55 +120,28 @@
 
   function drawMarker(cave) {
     const layer = $('spots');
-    const id = norm(cave.id);
-    const x = Number(cave.x);
-    const y = Number(cave.y);
+    const id = norm(cave.id), x = Number(cave.x), y = Number(cave.y);
     if (!id || !isFinite(x) || !isFinite(y)) return;
-
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'spot';
     button.textContent = id;
     button.style.left = `${x}%`;
     button.style.top = `${y}%`;
-    button.onpointerdown = event => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    button.onpointerup = event => {
-      event.preventDefault();
-      event.stopPropagation();
-      openCave(id);
-    };
-    button.onclick = event => {
-      event.preventDefault();
-      event.stopPropagation();
-      openCave(id);
-    };
+    button.onpointerdown = event => { event.preventDefault(); event.stopPropagation(); };
+    button.onpointerup = event => { event.preventDefault(); event.stopPropagation(); openCave(id); };
+    button.onclick = event => { event.preventDefault(); event.stopPropagation(); openCave(id); };
     layer.appendChild(button);
   }
 
   function render() {
-    const nums = $('numbers');
-    const layer = $('spots');
+    const nums = $('numbers'), layer = $('spots');
     if (nums) nums.innerHTML = '';
     layer.innerHTML = '';
-
     const seenNum = new Set();
-    allCaves.forEach(cave => {
-      const id = norm(cave.id);
-      if (!id || seenNum.has(id)) return;
-      seenNum.add(id);
-      drawNumber(cave);
-    });
-
+    allCaves.forEach(cave => { const id = norm(cave.id); if (!id || seenNum.has(id)) return; seenNum.add(id); drawNumber(cave); });
     const seenNote = new Set();
-    noteCaves.forEach(cave => {
-      const id = norm(cave.id);
-      if (!id || seenNote.has(id)) return;
-      seenNote.add(id);
-      drawMarker(cave);
-    });
+    noteCaves.forEach(cave => { const id = norm(cave.id); if (!id || seenNote.has(id)) return; seenNote.add(id); drawMarker(cave); });
   }
 
   async function loadJson(path) {
@@ -169,9 +149,7 @@
       const response = await fetch(`${path}?ts=${Date.now()}`, { cache: 'no-store' });
       const json = await response.json();
       return Array.isArray(json) ? json : json.caves || [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
   async function load() {
@@ -188,35 +166,51 @@
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
-
     const image = await new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
       img.onerror = reject;
       img.src = data;
     });
-
-    const w = image.naturalWidth;
-    const h = image.naturalHeight;
-    const s = Math.min(1, 600 / Math.max(w, h));
+    const s = Math.min(1, 600 / Math.max(image.naturalWidth, image.naturalHeight));
     const canvas = document.createElement('canvas');
-    canvas.width = Math.round(w * s);
-    canvas.height = Math.round(h * s);
-
+    canvas.width = Math.round(image.naturalWidth * s);
+    canvas.height = Math.round(image.naturalHeight * s);
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    return await new Promise((resolve, reject) => {
-      canvas.toBlob(blob => blob ? resolve(blob) : reject(Error('壓縮失敗')), 'image/jpeg', 0.45);
-    });
+    return await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(Error('壓縮失敗')), 'image/jpeg', 0.45));
   }
 
   async function hash(blob) {
     const buf = await blob.arrayBuffer();
     const digest = await crypto.subtle.digest('SHA-256', buf);
     return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function saveShared(extraImages = []) {
+    const id = norm($('caveInput').value || cur);
+    if (!id) return status('請輸入洞窟號');
+    const cave = findNote(id);
+    if (!cave) return status('找不到這個洞窟');
+    const title = $('sharedTitleInput').value || cave.title || `${id} 窟`;
+    const note = $('sharedNoteInput').value || '';
+    const images = [...collectEditedImages(), ...extraImages.map(cleanImageForSave)].filter(image => image.src);
+    status('正在儲存共用資料…');
+    const response = await fetch('/api/update-maijishan-cave', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, title, note, images })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) throw Error(result.detail || result.error || '儲存失敗');
+    const index = noteCaves.findIndex(item => String(item.id) === id);
+    if (index >= 0) noteCaves[index] = result.cave;
+    renderImageEditor(result.cave);
+    render();
+    status('完成：共用資料已更新');
+    return result.cave;
   }
 
   async function upload() {
@@ -226,20 +220,15 @@
     if (!id) return status('請輸入洞窟號');
     if (!file) return status('請選照片');
     if (!navigator.onLine) return status('離線不能上傳照片');
-
     $('uploadBtn').disabled = true;
     try {
       status('正在壓縮照片…');
       const blob = await compress(file);
       const contentHash = await hash(blob);
       const clientUploadId = `maijishan-${id}-${contentHash.slice(0, 24)}`;
-      const storedImages = im();
-      const list = Array.isArray(storedImages[id]) ? storedImages[id] : [];
-
-      if (list.some(item => item.clientUploadId === clientUploadId)) {
-        return status('這張照片已存在');
-      }
-
+      const cave = findNote(id);
+      const currentImages = Array.isArray(cave && cave.images) ? cave.images : [];
+      if (currentImages.some(item => item.clientUploadId === clientUploadId || item.src.includes(clientUploadId))) return status('這張照片已存在');
       status('正在上傳照片…');
       const response = await fetch('/api/upload-cave-image-fast', {
         method: 'POST',
@@ -254,17 +243,10 @@
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.url) throw Error(result.detail || result.error || '上傳失敗');
-
-      list.push({
-        src: result.url,
-        caption,
-        clientUploadId,
-        createdAt: new Date().toISOString()
-      });
-      storedImages[id] = list.slice(-30);
-      localStorage.setItem(I, JSON.stringify(storedImages));
+      await saveShared([{ src: result.url, caption }]);
       $('fileInput').value = '';
-      status('完成：照片已上傳');
+      $('captionInput').value = '';
+      status('完成：照片已加入共用資料');
     } catch (error) {
       status(error.message || String(error));
     } finally {
@@ -275,57 +257,28 @@
   function boot() {
     $('viewer').onpointerdown = event => {
       if (event.target.closest('.spot')) return;
-      drag = true;
-      sx = event.clientX;
-      sy = event.clientY;
-      bx = px;
-      by = py;
-      $('viewer').setPointerCapture(event.pointerId);
+      drag = true; sx = event.clientX; sy = event.clientY; bx = px; by = py; $('viewer').setPointerCapture(event.pointerId);
     };
-    $('viewer').onpointermove = event => {
-      if (!drag) return;
-      px = bx + event.clientX - sx;
-      py = by + event.clientY - sy;
-      trans();
-    };
-    $('viewer').onpointerup = event => {
-      drag = false;
-      try {
-        $('viewer').releasePointerCapture(event.pointerId);
-      } catch {}
-    };
-
+    $('viewer').onpointermove = event => { if (!drag) return; px = bx + event.clientX - sx; py = by + event.clientY - sy; trans(); };
+    $('viewer').onpointerup = event => { drag = false; try { $('viewer').releasePointerCapture(event.pointerId); } catch {} };
     $('zoomIn').onclick = () => { scale = Math.min(4, scale * 1.2); trans(); };
     $('zoomOut').onclick = () => { scale = Math.max(0.65, scale / 1.2); trans(); };
     $('resetView').onclick = reset;
     $('closeModal').onclick = $('closeModal2').onclick = () => { $('modal').style.display = 'none'; };
     $('closePanel').onclick = () => { $('panel').style.display = 'none'; };
-    $('addNote').onclick = () => { $('panel').style.display = 'flex'; };
-    $('editCave').onclick = () => {
-      $('modal').style.display = 'none';
-      $('panel').style.display = 'flex';
-      $('caveInput').value = cur;
-      $('textInput').value = tm()[cur] || '';
-    };
+    $('addNote').onclick = () => openPanelForCave(cur || '');
+    $('editCave').onclick = () => { $('modal').style.display = 'none'; openPanelForCave(cur); };
     $('saveText').onclick = () => {
       const id = norm($('caveInput').value);
       if (!id) return status('請輸入洞窟號');
-      const notes = tm();
-      notes[id] = $('textInput').value || '';
-      localStorage.setItem(T, JSON.stringify(notes));
-      status('文字筆記已儲存');
+      const notes = tm(); notes[id] = $('textInput').value || ''; localStorage.setItem(T, JSON.stringify(notes));
+      status('個人文字筆記已儲存');
     };
+    $('saveShared').onclick = () => { saveShared().catch(error => status(error.message || String(error))); };
     $('uploadBtn').onclick = upload;
-    $('clearOld').onclick = () => {
-      OLD.forEach(key => localStorage.removeItem(key));
-      status('已清除舊暫存');
-    };
-    $('map').onload = () => {
-      render();
-      reset();
-    };
-    load();
-    reset();
+    $('clearOld').onclick = () => { OLD.forEach(key => localStorage.removeItem(key)); status('已清除舊暫存'); };
+    $('map').onload = () => { render(); reset(); };
+    load(); reset();
   }
 
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', boot) : boot();
