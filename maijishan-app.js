@@ -61,8 +61,13 @@
     return noteCaves.find(cave => String(cave.id) === id);
   }
 
+  function imageSrc(src) {
+    const value = String(src || '');
+    return value.startsWith('/images/maijishan/') ? `/public${value}` : value;
+  }
+
   function photoFigure(image) {
-    return `<figure class="photo"><img loading="lazy" src="${esc(image.src)}" alt="${esc(image.caption || '')}">${image.caption ? `<figcaption>${esc(image.caption)}</figcaption>` : ''}</figure>`;
+    return `<figure class="photo"><img loading="lazy" src="${esc(imageSrc(image.src))}" alt="${esc(image.caption || '')}">${image.caption ? `<figcaption>${esc(image.caption)}</figcaption>` : ''}</figure>`;
   }
 
   function openCave(id) {
