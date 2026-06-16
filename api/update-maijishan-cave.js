@@ -75,7 +75,6 @@ module.exports = async function handler(req, res) {
     process.env.MAIJISHAN_GITHUB_BRANCH ||
     'main';
 
-  if (!blobToken) return res.status(500).json({ error: '照片儲存空間尚未設定，請聯絡家人協助處理。' });
   if (!githubToken) return res.status(500).json({ error: '資料儲存權限尚未設定，請聯絡家人協助處理。' });
 
   try {
@@ -128,16 +127,18 @@ module.exports = async function handler(req, res) {
     if (index >= 0) list[index] = supplement;
     else list.push(supplement);
 
-    await put(
-      `${site}-supplements/cave-${id}-${now.replace(/[:.]/g, '-')}.json`,
-      JSON.stringify({ previous, supplement }, null, 2),
-      {
-        access: 'public',
-        contentType: 'application/json; charset=utf-8',
-        addRandomSuffix: false,
-        token: blobToken
-      }
-    );
+    if (blobToken) {
+      await put(
+        `${site}-supplements/cave-${id}-${now.replace(/[:.]/g, '-')}.json`,
+        JSON.stringify({ previous, supplement }, null, 2),
+        {
+          access: 'public',
+          contentType: 'application/json; charset=utf-8',
+          addRandomSuffix: false,
+          token: blobToken
+        }
+      );
+    }
 
     const payload = {
       message: `Update ${site} supplement ${id}`,
