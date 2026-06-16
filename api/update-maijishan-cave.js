@@ -59,6 +59,30 @@ async function githubJson(url, options) {
   return data;
 }
 
+function decodeContent(file) {
+  return JSON.parse(Buffer.from(file.content || '', 'base64').toString('utf8'));
+}
+
+async function findCoordinate(apiBase, headers, branch, site, id) {
+  const coordinatePath = site === 'mogao'
+    ? 'data/cave-coordinates.json'
+    : 'data/maijishan-all-caves.json';
+  const filePath = encodeURIComponent(coordinatePath).replace(/%2F/g, '/');
+  const file = await githubJson(`${apiBase}/contents/${filePath}?ref=${encodeURIComponent(branch)}`, { headers });
+  const raw = decodeContent(file);
+  const list = Array.isArray(raw) ? raw : (Array.isArray(raw.caves) ? raw.caves : []);
+  const found = list.find(item => String(item && item.id).replace(/[^0-9]/g, '') === id);
+  if (!found) return null;
+  const x = cleanPoint(found.x);
+  const y = cleanPoint(found.y);
+  if (x === null || y === null) return null;
+  return {
+    x,
+    y,
+    title: cleanText(found.title, 80) || `${id} 窟`
+  };
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -100,7 +124,7 @@ module.exports = async function handler(req, res) {
 
     try {
       current = await githubJson(`${apiBase}/contents/${filePath}?ref=${encodeURIComponent(branch)}`, { headers });
-      list = JSON.parse(Buffer.from(current.content || '', 'base64').toString('utf8'));
+      list = decodeContent(current);
       if (!Array.isArray(list)) list = [];
     } catch (error) {
       if (!String(error.message || '').includes('Not Found')) throw error;
@@ -114,12 +138,23 @@ module.exports = async function handler(req, res) {
       updatedAt: now
     };
 
-    const x = cleanPoint(body.x);
-    const y = cleanPoint(body.y);
+    let x = cleanPoint(body.x);
+    let y = cleanPoint(body.y);
+    let title = cleanText(body.title, 80) || `${id} 窟`;
+
+    if (x === null || y === null) {
+      const coordinate = await findCoordinate(apiBase, headers, branch, site, id);
+      if (coordinate) {
+        x = coordinate.x;
+        y = coordinate.y;
+        title = coordinate.title;
+      }
+    }
+
     if (x !== null && y !== null) {
       supplement.x = x;
       supplement.y = y;
-      supplement.title = cleanText(body.title, 80) || `${id} 窟`;
+      supplement.title = title;
     }
 
     const index = list.findIndex(item => String(item && item.id) === id);
