@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-fix-20260616-1';
+const CACHE_NAME = 'mogao-pwa-fix-20260616-2';
 const ASSETS = [
   './',
   './index.html',
