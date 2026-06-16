@@ -32,14 +32,23 @@ function cleanText(value, max) {
   return String(value || '').replace(/\u0000/g, '').trim().slice(0, max);
 }
 
+function cleanPoint(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  return Math.max(0, Math.min(100, Number(number.toFixed(3))));
+}
+
 function cleanImages(value) {
   if (!Array.isArray(value)) return [];
-  return value.slice(0, 60).map(item => {
-    const src = cleanText(item && item.src, 1200);
+  const seen = new Set();
+  return value.slice(0, 80).map(item => {
+    const src = cleanText(item && item.src, 1200).replace(/^\/public\/images\//, '/images/');
     const caption = cleanText(item && item.caption, 500);
-    if (!src) return null;
-    const ok = src.startsWith('https://') || src.startsWith('/public/images/') || src.startsWith('/images/');
-    return ok ? { src, caption } : null;
+    if (!src || seen.has(src)) return null;
+    const ok = src.startsWith('https://') || src.startsWith('/images/') || src.startsWith('/public/images/');
+    if (!ok) return null;
+    seen.add(src);
+    return { src, caption };
   }).filter(Boolean);
 }
 
@@ -56,7 +65,6 @@ module.exports = async function handler(req, res) {
   const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
   const githubToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
-  // New project-level names. Old MAIJISHAN_* names are kept only as fallback.
   const repo =
     process.env.MOGAO_PWA_GITHUB_REPO ||
     process.env.MAIJISHAN_GITHUB_REPO ||
@@ -67,8 +75,8 @@ module.exports = async function handler(req, res) {
     process.env.MAIJISHAN_GITHUB_BRANCH ||
     'main';
 
-  if (!blobToken) return res.status(500).json({ error: '缺少 BLOB_READ_WRITE_TOKEN' });
-  if (!githubToken) return res.status(500).json({ error: '缺少 GITHUB_TOKEN 或 GH_TOKEN' });
+  if (!blobToken) return res.status(500).json({ error: '照片儲存空間尚未設定，請聯絡家人協助處理。' });
+  if (!githubToken) return res.status(500).json({ error: '資料儲存權限尚未設定，請聯絡家人協助處理。' });
 
   try {
     const body = await readBody(req);
@@ -106,6 +114,14 @@ module.exports = async function handler(req, res) {
       images: cleanImages(body.images),
       updatedAt: now
     };
+
+    const x = cleanPoint(body.x);
+    const y = cleanPoint(body.y);
+    if (x !== null && y !== null) {
+      supplement.x = x;
+      supplement.y = y;
+      supplement.title = cleanText(body.title, 80) || `${id} 窟`;
+    }
 
     const index = list.findIndex(item => String(item && item.id) === id);
     const previous = index >= 0 ? list[index] : null;
