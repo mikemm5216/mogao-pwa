@@ -35,7 +35,6 @@
     return Number.isFinite(n) ? n : null;
   };
   const hasPoint = item => num(item && item.x) !== null && num(item && item.y) !== null;
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const imgSrc = value => String(value || '').replace(/^\/public\/images\//, '/images/');
 
   function trans() {
@@ -58,8 +57,26 @@
     return noteCaves.find(item => norm(item && item.id) === id);
   }
 
+  function findAll(id) {
+    return allCaves.find(item => norm(item && item.id) === id);
+  }
+
   function findSupp(id) {
     return supp.find(item => norm(item && item.id) === id) || { id, note: '', images: [] };
+  }
+
+  function coordinateFor(id) {
+    const sources = [findSupp(id), findAll(id), findNote(id)];
+    for (const item of sources) {
+      if (hasPoint(item)) {
+        return {
+          x: Number(num(item.x).toFixed(3)),
+          y: Number(num(item.y).toFixed(3)),
+          title: item.title || `${id} 窟`
+        };
+      }
+    }
+    return null;
   }
 
   function fig(item) {
@@ -69,13 +86,13 @@
   function openCave(id) {
     id = norm(id);
     cur = id;
-    const cave = findNote(id) || { id, title: `${id} 窟`, note: '這個洞窟目前沒有內建筆記。' };
+    const cave = findNote(id) || findAll(id) || { id, title: `${id} 窟`, note: '這個洞窟目前沒有內建筆記。' };
     const extra = findSupp(id);
     const builtImages = Array.isArray(cave.images) ? cave.images : [];
     const savedImages = Array.isArray(extra.images) ? extra.images : [];
     const localImages = Array.isArray(im()[id]) ? im()[id] : [];
 
-    $('modalTitle').textContent = (cave.title || `${id} 窟`) + ' 筆記';
+    $('modalTitle').textContent = (cave.title || extra.title || `${id} 窟`) + ' 筆記';
     $('info').textContent = cave.desc || cave.note || '這個洞窟目前沒有內建筆記。';
     $('textView').textContent = extra.note || tm()[id] || '尚無補充文字。';
     $('photos').innerHTML = [...builtImages.map(fig), ...savedImages.map(fig), ...localImages.map(fig)].join('') || '<p class="muted">尚無照片。</p>';
@@ -198,46 +215,6 @@
     return [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2, '0')).join('');
   }
 
-  function centerPoint() {
-    const viewer = $('viewer');
-    const wrap = $('wrap');
-    if (!viewer || !wrap) return null;
-    const viewerBox = viewer.getBoundingClientRect();
-    const wrapBox = wrap.getBoundingClientRect();
-    if (!wrapBox.width || !wrapBox.height) return null;
-    return {
-      x: Number(clamp(((viewerBox.left + viewerBox.width / 2 - wrapBox.left) / wrapBox.width) * 100, 0, 100).toFixed(3)),
-      y: Number(clamp(((viewerBox.top + viewerBox.height / 2 - wrapBox.top) / wrapBox.height) * 100, 0, 100).toFixed(3))
-    };
-  }
-
-  function setPanelPoint(point) {
-    const xInput = $('labelX');
-    const yInput = $('labelY');
-    if (!xInput || !yInput || !point) return;
-    xInput.value = point.x;
-    yInput.value = point.y;
-  }
-
-  function getPanelPoint(id) {
-    let x = num($('labelX') && $('labelX').value);
-    let y = num($('labelY') && $('labelY').value);
-    const existing = findSupp(id);
-    if ((x === null || y === null) && hasPoint(existing)) {
-      x = num(existing.x);
-      y = num(existing.y);
-    }
-    if ((x === null || y === null) && !findNote(id)) {
-      const point = centerPoint();
-      if (point) {
-        x = point.x;
-        y = point.y;
-        setPanelPoint(point);
-      }
-    }
-    return x !== null && y !== null ? { x, y } : null;
-  }
-
   function dedupeImages(images) {
     const seen = new Set();
     return images.filter(item => {
@@ -248,19 +225,20 @@
     });
   }
 
+  function requireCoordinate(id) {
+    const coordinate = coordinateFor(id);
+    if (!coordinate) throw Error(`座標表找不到第 ${id} 窟，無法新增橘色標籤。`);
+    return coordinate;
+  }
+
   async function saveSupplement(extraImages = []) {
     const id = norm(($('caveInput') && $('caveInput').value) || cur);
     if (!id) return status('請輸入洞窟號');
+    const coordinate = requireCoordinate(id);
     const existing = findSupp(id);
     const note = ($('textInput') && $('textInput').value) || existing.note || '';
     const images = dedupeImages([...(Array.isArray(existing.images) ? existing.images : []), ...extraImages]);
-    const point = getPanelPoint(id);
-    const body = { site: SITE, id, note, images };
-    if (point) {
-      body.x = point.x;
-      body.y = point.y;
-      body.title = `${id} 窟`;
-    }
+    const body = { site: SITE, id, note, images, x: coordinate.x, y: coordinate.y, title: coordinate.title };
 
     const response = await fetch(UPDATE_API, {
       method: 'POST',
@@ -275,7 +253,7 @@
     else supp.push(json.supplement);
     localStorage.setItem(TEXT_KEY, JSON.stringify({ ...tm(), [id]: note }));
     render();
-    status(point ? '完成：補充資料與橘色標籤已更新' : '完成：補充資料已更新');
+    status('完成：已依座標表新增／更新橘色標籤');
   }
 
   async function upload() {
@@ -283,6 +261,7 @@
     const file = $('fileInput') && $('fileInput').files[0];
     const caption = ($('captionInput') && $('captionInput').value) || '';
     if (!id) return status('請輸入洞窟號');
+    try { requireCoordinate(id); } catch (error) { return status(error.message || String(error)); }
     if (!file) return status('請選照片');
     if (!navigator.onLine) return status('離線時不能上傳照片，請連上網路後再試。');
     $('uploadBtn').disabled = true;
@@ -316,6 +295,12 @@
     }
   }
 
+  function updateCoordinateStatus() {
+    const id = norm($('caveInput') && $('caveInput').value);
+    if (!id) return status('');
+    status(coordinateFor(id) ? '已找到座標，儲存後會新增／更新橘色標籤。' : `座標表找不到第 ${id} 窟。`);
+  }
+
   function openPanelFor(id) {
     id = norm(id || '');
     const existing = id ? findSupp(id) : { note: '' };
@@ -324,9 +309,7 @@
     $('textInput').value = existing.note || tm()[id] || '';
     $('captionInput').value = '';
     $('fileInput').value = '';
-    $('labelX').value = hasPoint(existing) ? num(existing.x) : '';
-    $('labelY').value = hasPoint(existing) ? num(existing.y) : '';
-    status(id && hasPoint(existing) ? '這個洞窟已有橘色標籤位置。' : '');
+    updateCoordinateStatus();
   }
 
   function boot() {
@@ -359,12 +342,7 @@
       $('modal').style.display = 'none';
       openPanelFor(cur);
     };
-    $('placeLabel').onclick = () => {
-      const point = centerPoint();
-      if (!point) return status('目前無法取得位置，請稍後再試。');
-      setPanelPoint(point);
-      status('已記住橘色標籤位置，儲存後會出現在圖上。');
-    };
+    $('caveInput').oninput = updateCoordinateStatus;
     $('saveText').onclick = () => { saveSupplement().catch(error => status(error.message || String(error))); };
     $('uploadBtn').onclick = upload;
     $('clearOld').onclick = () => {
