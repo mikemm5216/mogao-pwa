@@ -6,3 +6,5 @@
 補丁 v6.1：橘色標籤外觀已改成半透明圓形，保留洞窟編號；座標仍是 v6 對應新版底圖的座標。
 
 補丁 v6.2：補上第191窟，座標 x=3.038, y=72.330，並附 overlay preview。
+
+補丁 v6.3：修正 191 看不到的原因。現在 maijishan-app.js 會直接把 data/maijishan-all-caves.json 裡的洞窟全部渲染成橘色標籤；不再依賴 maijishan-caves.json 才顯示。

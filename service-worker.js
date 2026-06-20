@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mogao-pwa-maijishan-bottom-map-v6-2';
+const CACHE_NAME = 'mogao-pwa-maijishan-bottom-map-v6-3';
 const ASSETS = ['./','./index.html','./maijishan.html','./app.js','./maijishan-app.js','./style.css','./manifest.webmanifest','./assets/mogao-map.jpg','./data/cave-coordinates.json','./data/mogao-supplements.json','./data/maijishan-new-map.webp','./data/maijishan-all-caves.json','./data/maijishan-caves.json','./data/maijishan-supplements.json'];
 
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)));self.skipWaiting();});
