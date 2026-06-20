@@ -1,6 +1,6 @@
-麥積山 v4：
-1. 底圖使用最新生成的無橘色標籤版本。
-2. 橘色標籤由前端動畫/互動層產生，不畫死在底圖。
-3. 已更新 data/maijishan-all-caves.json 座標表。
-4. 已移除 maijishan-app.js 舊的硬寫 HOTSPOT_OVERRIDES，之後只依新版座標表。
-5. 覆蓋 /maijishan.html /maijishan-app.js /service-worker.js /data/maijishan-new-map.webp /data/maijishan-all-caves.json
+這一版已把你確認的底圖換成新的麥積山底圖。
+內容確認：包含老爸手寫圖所有洞窟：121, 127, 98, 133, 135, 78, 44, 43, 5, 4, 13, 9, 3, 1。
+另外也保留底圖上額外可見的：148, 37, 168。
+已更新檔案：/maijishan.html /maijishan-app.js /service-worker.js /data/maijishan-new-map.webp /data/maijishan-all-caves.json
+
+補丁 v6.1：橘色標籤外觀已改成半透明圓形，保留洞窟編號；座標仍是 v6 對應新版底圖的座標。
