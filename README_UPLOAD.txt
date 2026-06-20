@@ -4,3 +4,5 @@
 已更新檔案：/maijishan.html /maijishan-app.js /service-worker.js /data/maijishan-new-map.webp /data/maijishan-all-caves.json
 
 補丁 v6.1：橘色標籤外觀已改成半透明圓形，保留洞窟編號；座標仍是 v6 對應新版底圖的座標。
+
+補丁 v6.2：補上第191窟，座標 x=3.038, y=72.330，並附 overlay preview。
